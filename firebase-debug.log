@@ -1,0 +1,37 @@
+[debug] [2019-07-24T19:15:53.034Z] ----------------------------------------------------------------------
+[debug] [2019-07-24T19:15:53.036Z] Command:       C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2019-07-24T19:15:53.036Z] CLI Version:   7.2.0
+[debug] [2019-07-24T19:15:53.036Z] Platform:      win32
+[debug] [2019-07-24T19:15:53.036Z] Node Version:  v10.15.1
+[debug] [2019-07-24T19:15:53.037Z] Time:          Thu Jul 25 2019 00:45:53 GMT+0530 (India Standard Time)
+[debug] [2019-07-24T19:15:53.037Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-07-24T19:15:53.048Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-07-24T19:15:53.048Z] > authorizing via signed-in user
+[debug] [2019-07-24T19:15:53.048Z] [iam] checking project angular-firebase-b8ac9 for permissions ["firebase.projects.get"]
+[debug] [2019-07-24T19:15:53.049Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/angular-firebase-b8ac9:testIamPermissions  
+
+[debug] [2019-07-24T19:15:54.877Z] <<< HTTP RESPONSE 200
+[debug] [2019-07-24T19:15:54.880Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/angular-firebase-b8ac9  
+ 
+[debug] [2019-07-24T19:15:55.334Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'E:\angular\angular-firestarter-master\angular-firestarter-master'...
+[info] 
+[debug] [2019-07-24T19:15:55.343Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/angular-firebase-b8ac9/webApps/-/config  
+ 
+[warn] !  Your functions directory does not specify a Node version.
+   - Learn more at https://firebase.google.com/docs/functions/manage-functions#set_runtime_options
+[debug] [2019-07-24T19:15:55.359Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/angular-firebase-b8ac9/adminSdkConfig  
+ 
+[debug] [2019-07-24T19:15:55.712Z] <<< HTTP RESPONSE 200
+[info] +  functions: Emulator started at http://localhost:5001
+[debug] [2019-07-24T19:15:55.983Z] <<< HTTP RESPONSE 200
+[info] i  functions: Watching "E:\angular\angular-firestarter-master\angular-firestarter-master\functions" for Cloud Functions...
+[info] i  hosting: Serving hosting files from: public
+[info] +  hosting: Local server: http://localhost:5000
+[debug] [2019-07-24T19:15:56.377Z] [runtime-status] Functions runtime initialized. {"cwd":"E:\\angular\\angular-firestarter-master\\angular-firestarter-master\\functions","node_version":"10.15.1"}
+[debug] [2019-07-24T19:15:56.378Z] [runtime-status] Disabled runtime features: {"functions_config_helper":true,"network_filtering":true,"timeout":true,"memory_limiting":true,"protect_env":true,"admin_stubs":true} {}
+[debug] [2019-07-24T19:15:56.381Z] [runtime-status] Resolved module firebase-admin {"declared":true,"installed":true,"version":"5.12.1","resolution":"E:\\angular\\angular-firestarter-master\\angular-firestarter-master\\functions\\node_modules\\firebase-admin\\lib\\index.js"}
+[warn] !  The Cloud Functions emulator requires the module "firebase-admin" to be version >8.0.0 so your version is too old. You can probably fix this by running "npm install firebase-admin@latest" in your functions directory.
+[info] i  functions: Your functions could not be parsed due to an issue with your node_modules (see above)
