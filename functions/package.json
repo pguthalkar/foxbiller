@@ -19,4 +19,8 @@
     "typescript": "^2.5.3"
   },
   "private": true
+  ,
+  "engines": {
+    "node": "8"
+  }
 }
