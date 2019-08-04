@@ -106,7 +106,8 @@ export class AuthService {
       .signInWithEmailAndPassword(email, password)
       .then(credential => {
         this.notify.update('Welcome back!', 'success');
-        return this.updateUserData(credential.user);
+        this.updateUserData(credential.user);
+        this.router.navigate(['/dashboard']);  
       })
       .catch(error => this.handleError(error));
   }

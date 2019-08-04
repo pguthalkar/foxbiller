@@ -1,19 +1,17 @@
-import {
-  BrowserModule,
-  BrowserTransferStateModule
-} from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
+
+import {DashboardModule } from './dashboard/dashboard.module';
+
+import { HeaderComponent } from './pages/header/header.component';
+import { NavBarComponent } from './pages/nav-bar/nav-bar.component';
 
 // Firestarter App Modules
 import { CoreModule } from './core/core.module';
 import { UploadsModule } from './uploads/uploads.module';
-import { UiModule } from './ui/ui.module';
-import { NotesModule } from './notes/notes.module';
 
 // @angular/fire/ Modules
 import { AngularFireModule } from '@angular/fire';
@@ -22,18 +20,25 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireFunctionsModule } from '@angular/fire/functions';
 
-// IMPORTANT
-// Add your own project credentials to environments/*.ts
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+import { PagesModule } from './pages/pages.module';
+import { ImportDataModule } from './import-data/import-data.module';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+    HeaderComponent,
+    NavBarComponent,
+    
+  ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
-    BrowserTransferStateModule,
-    AppRoutingModule,
+    BrowserModule,
+    PagesModule,
+    ImportDataModule,
     CoreModule,
-    UiModule,
-    NotesModule,
+    AppRoutingModule,
+    DashboardModule,
     UploadsModule,
     AngularFireModule.initializeApp(environment.firebase, 'firestarter'),
     AngularFirestoreModule,
@@ -44,6 +49,7 @@ import { AngularFireFunctionsModule } from '@angular/fire/functions';
       enabled: environment.production
     })
   ],
+  providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

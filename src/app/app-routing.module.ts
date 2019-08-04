@@ -1,22 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
+import { UserLoginComponent } from './pages/user-login/user-login.component';
 import { AuthGuard } from './core/auth.guard';
-import { UserLoginComponent } from './ui/user-login/user-login.component';
-import { HomePageComponent } from './ui/home-page/home-page.component';
-import { NotesListComponent } from './notes/notes-list/notes-list.component';
-import { UploadPageComponent } from './uploads/upload-page/upload-page.component';
-
-import { SsrPageComponent } from './ui/ssr-page/ssr-page.component';
-
-
 const routes: Routes = [
-  { path: '', component: HomePageComponent },
+  { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule'},
+  { path: 'import', loadChildren: './import-data/import-data.module#ImportDataModule'},
   { path: 'login', component: UserLoginComponent },
-  { path: 'notes', component: NotesListComponent,  canActivate: [AuthGuard] },
-  { path: 'uploads',  component: UploadPageComponent,  canActivate: [AuthGuard] },
-
-  { path: 'ssr', component: SsrPageComponent }
 ];
 
 @NgModule({
