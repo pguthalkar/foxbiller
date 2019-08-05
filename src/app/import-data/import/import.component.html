@@ -1,1 +1,44 @@
-<p>import works!</p>
+<div class="container-fluid">
+
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="#">Import CSV</a>
+        </li>
+        <li class="breadcrumb-item active">Overview</li>
+    </ol>
+
+    <input type="file" #fileImportInput name="File Upload" id="txtFileUpload" (change)="fileChangeListener($event)"
+        accept=".csv" />
+    <div cdkDropListGroup>
+
+        <div class="example-container">
+            <h2>Available columns</h2>
+
+            <div cdkDropList [cdkDropListData]="availableFields" class="example-list"
+                (cdkDropListDropped)="drop($event)">
+                <div class="example-box" *ngFor="let item of availableFields" cdkDrag [cdkDragDisabled]="1">{{item}}
+                </div>
+            </div>
+        </div>
+
+        <div class="example-container">
+            <h2>Map columns</h2>
+
+            <div cdkDropList [cdkDropListData]="mapFields" class="example-list" (cdkDropListDropped)="drop($event)">
+                <div class="example-box" *ngFor="let item of mapFields" cdkDrag>{{item}}</div>
+            </div>
+        </div>
+
+        <div class="example-container">
+            <h2>Imported csv columns</h2>
+
+            <div cdkDropList [cdkDropListData]="csvFields" class="example-list" cdkDropListSortingDisabled
+                (cdkDropListDropped)="drop($event)">
+                <div class="example-box" *ngFor="let item of csvFields" cdkDrag>{{item}}</div>
+            </div>
+        </div>
+
+
+    </div>
+</div>

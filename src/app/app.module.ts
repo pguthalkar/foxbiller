@@ -25,6 +25,8 @@ import { environment } from '../environments/environment';
 import { PagesModule } from './pages/pages.module';
 import { ImportDataModule } from './import-data/import-data.module';
 
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -34,6 +36,7 @@ import { ImportDataModule } from './import-data/import-data.module';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     PagesModule,
     ImportDataModule,
     CoreModule,
