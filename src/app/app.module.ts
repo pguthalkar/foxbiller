@@ -11,7 +11,7 @@ import { NavBarComponent } from './pages/nav-bar/nav-bar.component';
 
 // Firestarter App Modules
 import { CoreModule } from './core/core.module';
-import { UploadsModule } from './uploads/uploads.module';
+// import { UploadsModule } from './uploads/uploads.module';
 
 // @angular/fire/ Modules
 import { AngularFireModule } from '@angular/fire';
@@ -42,7 +42,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     CoreModule,
     AppRoutingModule,
     DashboardModule,
-    UploadsModule,
+    // UploadsModule,
     AngularFireModule.initializeApp(environment.firebase, 'firestarter'),
     AngularFirestoreModule,
     AngularFireAuthModule,

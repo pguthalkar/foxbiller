@@ -5,13 +5,14 @@ import { ImportDataRoutingModule } from './import-data-routing.module';
 import { ImportComponent } from './import/import.component';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
-
+import {MatButtonModule} from '@angular/material/button';
 @NgModule({
   declarations: [ImportComponent],
   imports: [
     CommonModule,
     ImportDataRoutingModule,
-    DragDropModule
+    DragDropModule,
+    MatButtonModule
   ]
 })
 export class ImportDataModule { }

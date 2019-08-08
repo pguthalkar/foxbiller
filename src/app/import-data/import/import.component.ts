@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-
+// import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-import',
   templateUrl: './import.component.html',
@@ -12,12 +12,38 @@ export class ImportComponent implements OnInit {
   csvFields = [
   ];
 
-  mapFields = [];
+  mappFields = {
+    'CustomerName' : [],
+    'CustomerNumber' : [],
+    'MeterSerialNumber' : [],
+    'MeterType' : [],
+    'ReadingTime' : [],
+    'ElectricityEnergy' : [],
+    'Unit' : [],
+    'CoolingEnergy' : [],
+    'Flow1' : [],
+    'VolumeWater' : [],
+    'Temperature1' : [],
+    'Temperature2' : [],
+    'InfoCodes' :[]
+  };
+  
   availableFields = [
-    'firstName',
-    'lastName',
-    'companyName'
+    'CustomerName',
+    'CustomerNumber',
+    'MeterSerialNumber',
+    'MeterType',
+    'ReadingTime',
+    'ElectricityEnergy',
+    'Unit',
+    'CoolingEnergy',
+    'Flow1',
+    'VolumeWater',
+    'Temperature1',
+    'Temperature2',
+    'InfoCodes'
   ];
+  inactiveCustomers = [];
   ngOnInit() {
   }
   title = 'app';
@@ -104,18 +130,40 @@ export class ImportComponent implements OnInit {
     this.csvRecords = [];
   }
 
-  drop(event: CdkDragDrop<string[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex);
-    }
+  drop(event: CdkDragDrop<string[]>, fieldName) {
+
+    // if (event.container.data.length > 0) {
+    //   transferArrayItem(event.container.data,
+    //     event.previousContainer.data,
+    //     event.previousIndex,
+    //     event.currentIndex);
+    // }
+    // else {
+      if (event.previousContainer === event.container) {
+        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      } else {
+        transferArrayItem(event.previousContainer.data,
+          event.container.data,
+          event.previousIndex,
+          event.currentIndex);
+      }
+    // }
   }
+  
+  specialUseCase(drag?: CdkDrag, drop?: CdkDropList) {
+    if (drop.data.length > 0) {
+      console.log("Can't drop you because there aren't enough items in 'Active'");
+      return false;
+    }
+    else{
+      return true;
+    }
 
-
+  }
+  
+  importData() {
+    console.log(this.mappFields);
+  }
 
 }
 

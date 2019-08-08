@@ -7,38 +7,96 @@
         </li>
         <li class="breadcrumb-item active">Overview</li>
     </ol>
-
-    <input type="file" #fileImportInput name="File Upload" id="txtFileUpload" (change)="fileChangeListener($event)"
+    <div class="card-body">
+        <input type="file" #fileImportInput name="File Upload" id="txtFileUpload" (change)="fileChangeListener($event)"
         accept=".csv" />
-    <div cdkDropListGroup>
+        
+        <button mat-stroked-button color="primary" (click)="importData()">Submit</button>
+    </div>
+    <div class="card-body">
+        <div cdkDropListGroup>
 
-        <div class="example-container">
-            <h2>Available columns</h2>
-
-            <div cdkDropList [cdkDropListData]="availableFields" class="example-list"
-                (cdkDropListDropped)="drop($event)">
-                <div class="example-box" *ngFor="let item of availableFields" cdkDrag [cdkDragDisabled]="1">{{item}}
+            <div class="available-container">
+                <h3>Available columns</h3>
+                <!-- <div class="card-header">Available columns</div> -->
+                <div   class="available-list "
+                    >
+                    <div class="available-box " *ngFor="let item of availableFields" cdkDrag [cdkDragDisabled]="1"  >{{item}}<span>:</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="example-container">
-            <h2>Map columns</h2>
+            
+            <div class="example-container">
+                <h3>Map columns</h3>
 
-            <div cdkDropList [cdkDropListData]="mapFields" class="example-list" (cdkDropListDropped)="drop($event)">
-                <div class="example-box" *ngFor="let item of mapFields" cdkDrag>{{item}}</div>
+                <div cdkDropList  [cdkDropListData]="mappFields.CustomerName" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase" >
+                    <div class="example-box" *ngFor="let item of mappFields.CustomerName" cdkDrag >{{item}}</div>
+                </div>
+
+                <div cdkDropList [cdkDropListData]="mappFields.CustomerNumber" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                    <div class="example-box" *ngFor="let item of mappFields.CustomerNumber" cdkDrag>{{item}}</div>
+                </div>
+            
+                <div cdkDropList [cdkDropListData]="mappFields.MeterSerialNumber" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                    <div class="example-box" *ngFor="let item of mappFields.MeterSerialNumber" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.MeterType" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.MeterType" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.ReadingTime" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.ReadingTime" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.ElectricityEnergy" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.ElectricityEnergy" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.Unit" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.Unit" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.CoolingEnergy" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.CoolingEnergy" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.Flow1" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.Flow1" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.VolumeWater" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.VolumeWater" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.Temperature1" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.Temperature1" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.Temperature2" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.Temperature2" cdkDrag>{{item}}</div>
+                </div>
+                
+                <div cdkDropList [cdkDropListData]="mappFields.InfoCodes" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListEnterPredicate]="specialUseCase">
+                        <div class="example-box" *ngFor="let item of mappFields.InfoCodes" cdkDrag>{{item}}</div>
+                </div>
+                
+                
+                    
+            
             </div>
-        </div>
 
-        <div class="example-container">
-            <h2>Imported csv columns</h2>
+            <div class="example-container">
+                <h3>Imported csv columns</h3>
 
-            <div cdkDropList [cdkDropListData]="csvFields" class="example-list" cdkDropListSortingDisabled
-                (cdkDropListDropped)="drop($event)">
-                <div class="example-box" *ngFor="let item of csvFields" cdkDrag>{{item}}</div>
+                <div cdkDropList [cdkDropListData]="csvFields" class="example-list" cdkDropListSortingDisabled
+                    (cdkDropListDropped)="drop($event)">
+                    <div class="example-box" *ngFor="let item of csvFields" cdkDrag>{{item}}</div>
+                </div>
             </div>
+
         </div>
-
-
     </div>
+
 </div>
