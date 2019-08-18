@@ -5,6 +5,9 @@
     display: inline-block;
     vertical-align: top;
   }
+  .flex-div {
+    float: right;
+  }
   
   .example-list {
     border: solid 1px #ccc;
@@ -45,12 +48,16 @@
     display: block;
   }
   
+  .required {
+    color: red;
+  }
   
   .available-box {
-    padding: 20px 10px;
+    margin: auto;
+    padding: 10px;
     border-bottom: solid 2px white;
     color: rgba(0, 0, 0, 0.87);
-    display: flex;
+    
     flex-direction: row;
     align-items: center;
     justify-content: space-between;

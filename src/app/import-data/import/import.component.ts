@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 // import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
+import { AlertService, FirebaseService } from '../../_services/index';
+import { exists } from 'fs';
 @Component({
   selector: 'app-import',
   templateUrl: './import.component.html',
@@ -8,40 +10,75 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragE
 })
 export class ImportComponent implements OnInit {
   csvContent: string;
-  constructor() { }
+  constructor(private alertService: AlertService, private firebaseService :FirebaseService ) { }
   csvFields = [
   ];
 
-  mappFields = {
-    'CustomerName' : [],
-    'CustomerNumber' : [],
-    'MeterSerialNumber' : [],
-    'MeterType' : [],
-    'ReadingTime' : [],
-    'ElectricityEnergy' : [],
-    'Unit' : [],
-    'CoolingEnergy' : [],
-    'Flow1' : [],
-    'VolumeWater' : [],
-    'Temperature1' : [],
-    'Temperature2' : [],
-    'InfoCodes' :[]
-  };
   
   availableFields = [
-    'CustomerName',
-    'CustomerNumber',
-    'MeterSerialNumber',
-    'MeterType',
-    'ReadingTime',
-    'ElectricityEnergy',
-    'Unit',
-    'CoolingEnergy',
-    'Flow1',
-    'VolumeWater',
-    'Temperature1',
-    'Temperature2',
-    'InfoCodes'
+    {
+      'name' : 'CustomerName',
+      'required' : true,
+      'mapped' : []
+    },
+    {
+      'name' : 'CustomerNumber',
+      'required' : true,
+      'mapped' : []
+    },
+    {
+      'name' : 'MeterSerialNumber',
+      'required' : true,
+      'mapped' : []
+    },
+    {
+      'name' : 'MeterType',
+      'required' : true,
+      'mapped' : []
+    },
+    {
+      'name' : 'ReadingTime',
+      'required' : true,
+      'mapped' : []
+    },
+    {
+      'name' : 'ElectricityEnergy',
+      'required' : true,
+      'mapped' : []
+    },{
+      'name' : 'Unit',
+      'required' : false,
+      'mapped' : []
+    },
+    {
+      'name' : 'CoolingEnergy',
+      'required' : false,
+      'mapped' : []
+    },
+    {
+      'name' : 'Flow1',
+      'required' : false,
+      'mapped' : []
+    },
+    {
+      'name' : 'VolumeWater',
+      'required' : false,
+      'mapped' : []
+    },{
+      'name' : 'Temperature1',
+      'required' : false,
+      'mapped' : []
+    },
+    {
+      'name' : 'Temperature2',
+      'required' : false,
+      'mapped' : []
+    },
+    {
+      'name' : 'InfoCodes',
+      'required' : false,
+      'mapped' : []
+    }
   ];
   inactiveCustomers = [];
   ngOnInit() {
@@ -130,7 +167,7 @@ export class ImportComponent implements OnInit {
     this.csvRecords = [];
   }
 
-  drop(event: CdkDragDrop<string[]>, fieldName) {
+  drop(event: CdkDragDrop<string[]>) {
 
     // if (event.container.data.length > 0) {
     //   transferArrayItem(event.container.data,
@@ -161,8 +198,46 @@ export class ImportComponent implements OnInit {
 
   }
   
-  importData() {
-    console.log(this.mappFields);
+  async importData() {
+    // console.log(this.availableFields);
+    let inputData = [];
+    let isError = false;
+    for (let index = 0; index < this.availableFields.length; index++) {
+
+      if(this.availableFields[index].required && this.availableFields[index].mapped.length === 0) {
+        this.alertService.error("All '*' marked fields are required");
+        isError = true;
+        break;
+      }
+    }
+
+    if(!isError) {
+      this.csvRecords.forEach(csvElement => {
+        let input = {};
+        this.availableFields.forEach(availElement => {
+          if(csvElement[availElement.mapped[0]] ) {
+            input[availElement.name] = csvElement[availElement.mapped[0]];
+          }
+        });
+        if(Object.keys(input).length > 0 ) {
+          inputData.push(input);
+        }
+          
+      });
+
+      inputData.forEach(async (element) => {
+    
+        await this.firebaseService.insertData(element,'meterDetails')
+          .then(
+            res => {
+              console.log(res);
+              // this.resetFields();
+              // this.router.navigate(['/home']);
+            }
+          );
+              
+      });
+    }
   }
 
 }
