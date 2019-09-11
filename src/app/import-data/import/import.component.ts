@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 // import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 import { AlertService, FirebaseService } from '../../_services/index';
-import { exists } from 'fs';
+
 @Component({
   selector: 'app-import',
   templateUrl: './import.component.html',

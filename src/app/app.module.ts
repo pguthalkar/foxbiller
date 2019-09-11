@@ -24,14 +24,15 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { PagesModule } from './pages/pages.module';
 import { ImportDataModule } from './import-data/import-data.module';
-
+import { UsersModule } from './users/users.module';
+// import { AlertComponent } from './_directives/alert.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    NavBarComponent,
+    NavBarComponent
     
   ],
   imports: [
@@ -39,18 +40,20 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     BrowserAnimationsModule,
     PagesModule,
     ImportDataModule,
+   // UsersModule,
     CoreModule,
     AppRoutingModule,
     DashboardModule,
     // UploadsModule,
-    AngularFireModule.initializeApp(environment.firebase, 'firestarter'),
+    AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireStorageModule,
     AngularFireFunctionsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production
-    })
+    }),
+    UsersModule
   ],
   providers: [],
   bootstrap: [AppComponent]
