@@ -9,6 +9,7 @@ import {
   AngularFirestoreDocument
 } from '@angular/fire/firestore';
 import { NotifyService } from './notify.service';
+import { UserService,SharedService } from '../_services/index';
 
 import { Observable, of } from 'rxjs';
 import { switchMap, startWith, tap, filter } from 'rxjs/operators';
@@ -28,9 +29,12 @@ export class AuthService {
 
   constructor(
     private afAuth: AngularFireAuth,
+    private afAuth2: AngularFireAuth,
     private afs: AngularFirestore,
     private router: Router,
-    private notify: NotifyService
+    private notify: NotifyService,
+    private userService:UserService,
+    private sharedService:SharedService
   ) {
     this.user = this.afAuth.authState.pipe(
       switchMap(user => {
@@ -105,7 +109,7 @@ export class AuthService {
 
   emailLogin(email: string, password: string) {
     return this.afAuth.auth
-      .signInWithEmailAndPassword(email, password)
+      .signInAndRetrieveDataWithEmailAndPassword(email, password)
       .then(credential => {
         this.notify.update('Welcome back!', 'success');
         this.updateUserData(credential.user);
@@ -141,13 +145,24 @@ export class AuthService {
     const userRef: AngularFirestoreDocument<User> = this.afs.doc(
       `users/${user.uid}`
     );
+    let condn = {
+      'key' : 'uid',
+      'value' : user.uid
+    }
+    this.userService.getUserCondn(condn).subscribe( userData => {
+      // this.items = userData;
+    
+      // console.log(userData);
+      const data = {
+        uid: userData[0] ? userData[0]['uid'] : user.uid,
+        name: userData[0] ? userData[0]['name'] : 'TBD',
+        email: userData[0] ? userData[0]['email'] : user.email,
+        role : userData[0] ? userData[0]['role'] : 'master'
+      };
+      // localStorage.setItem('user',JSON.stringify(data));
+      this.sharedService.setLocalStorage('user',JSON.stringify(data));
+      return userRef.set(data);
 
-    const data: User = {
-      uid: user.uid,
-      name: user.name || 'TBD',
-      email: user.email || null,
-      role : 'admin'
-    };
-    return userRef.set(data);
+    });
   }
 }

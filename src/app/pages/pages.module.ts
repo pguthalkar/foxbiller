@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { UserLoginComponent } from './user-login/user-login.component';
-
+import { AlertService, UserService,SharedService } from '../_services/index';
 
 @NgModule({
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
@@ -13,6 +13,12 @@ import { UserLoginComponent } from './user-login/user-login.component';
   ],
   exports: [
     UserLoginComponent
+  ],
+  
+  providers: [
+    AlertService,
+    UserService,
+    SharedService
   ]
 })
 

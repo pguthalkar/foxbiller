@@ -16,21 +16,32 @@ export class ListUserComponent implements OnInit {
   users;
 
   dataSource;
+  loggedInUser;
   displayedColumns = ['name', 'email', 'role'];
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
   constructor(private userService: UserService, private router: Router,) { }
   
   ngOnInit() {
-    this.userService.getData().subscribe(data => {
-      this.users = data.map(e => {
-        return {
-          id: e.payload.doc.id,
-          ...e.payload.doc.data()
-        };
-      })
-      this.dataSource = new MatTableDataSource<any>(this.users);
-    });
+    this.loggedInUser = JSON.parse(localStorage.getItem('user'));
+    let condn = {
+      'key' : 'parent',
+      'value' : this.loggedInUser.uid
+    }
+    if(this.loggedInUser.role == 'master') {
+      this.userService.getAllUser().subscribe( userData => {
+        this.users = userData;
+        
+        this.dataSource = new MatTableDataSource<any>(this.users);
+      });
+    }
+    else {
+      this.userService.getUserCondn(condn).subscribe( userData => {
+        this.users = userData;
+        
+        this.dataSource = new MatTableDataSource<any>(this.users);
+      });
+    }
     
 
   }

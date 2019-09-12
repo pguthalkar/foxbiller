@@ -9,9 +9,10 @@ import { AuthService } from '../../core/auth.service';
 export class NavBarComponent implements OnInit {
 
   constructor(public auth: AuthService) { }
-
+  loggedInUser;
 
   ngOnInit() {
+    this.loggedInUser = JSON.parse(localStorage.getItem('user'));
   }
 
 }

@@ -3,7 +3,7 @@
   <!-- Breadcrumbs-->
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
-      <a href="#">Users</a>
+      <a routerLink="/users">Users</a>
     </li>
     <li class="breadcrumb-item active">Overview</li>
   </ol>
@@ -11,7 +11,7 @@
   <!-- <alert></alert>  -->
 
   <div class="card-body">
-    <button class="button is-success" (click)="addUserNavigate()">
+    <button  mat-raised-button color="primary" class="button is-success" (click)="addUserNavigate()" *ngIf="loggedInUser.role == 'admin' || loggedInUser.role == 'master'">
       Add User
     </button>
     <hr>
