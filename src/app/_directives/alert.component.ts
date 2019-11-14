@@ -2,11 +2,11 @@
 
 import { Alert, AlertType } from '../_models/index';
 import { AlertService } from '../_services/index';
-declare var module: {
-    id: string;
- }
+// export declare var module: {
+//     id: string;
+//  }
 @Component({
-    moduleId: module.id,
+    // moduleId: module.id,
     selector: 'alert',
     templateUrl: 'alert.component.html'
 })

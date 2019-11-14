@@ -20,7 +20,7 @@ import { AlertService } from '../_services/index';
     
   ],
   providers: [
-    AlertService
+    // AlertService
 ],
 })
 export class ImportDataModule { }
