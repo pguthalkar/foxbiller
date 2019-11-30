@@ -13,17 +13,17 @@ import { User } from '../_models/index';
 export class UserService {
 
   usersCollection: AngularFirestoreCollection<any>;
-  noteDocument:   AngularFirestoreDocument<any>;
+  noteDocument: AngularFirestoreDocument<any>;
   arrUsers;
   constructor(private firestore: AngularFirestore, private afAuth: AngularFireAuth,
     private afAuth2: AngularFireAuth,
     private afs: AngularFirestore,
-    ) {
+  ) {
     this.usersCollection = this.firestore.collection('users');
     // this.arrUsers = this.firestore.collection('meterDetails').snapshotChanges();
   }
 
-  
+
 
   getAllUser() {
     // ['added', 'modified', 'removed']
@@ -32,10 +32,25 @@ export class UserService {
   }
 
   getUserCondn(condn = null) {
-    return this.firestore.collection('users',ref => ref.where(condn.key, '==', condn.value)).valueChanges()
-    
+    return this.firestore.collection('users', (ref) => {
+      ref.where(condn.key, '==', condn.value);
+      return ref;
+    }).valueChanges()
+
   }
-  
+
+  getMeterDerails(condn = null) {
+    return this.firestore.collection('meterDetails', ref => {
+      condn.forEach(element => {
+        ref.where(element.key, '==', element.value);
+      });
+      // ref.orderBy('ReadingTime');
+      // ref.limit(1);
+      return ref;
+    }).valueChanges()
+
+  }
+
 
   // getUserByCondn(condn) {
   //   return this.firestore.collection('users').where("capital", "==", true).get();
@@ -43,17 +58,17 @@ export class UserService {
   createUser(content) {
 
     return this.afAuth2.auth
-    .createUserWithEmailAndPassword(content.email, "Welcome123")
-    .then(credential => {
-      content['uid'] = credential.user.uid
-      content['time'] = new Date().getTime();
-      const userRef: AngularFirestoreDocument<User> = this.afs.doc(
-        `users/${credential.user.uid}`
-      );
-      return  userRef.set(content);
-    }).catch(error => {
-      console.log(error);
-    });
+      .createUserWithEmailAndPassword(content.email, "Welcome123")
+      .then(credential => {
+        content['uid'] = credential.user.uid
+        content['time'] = new Date().getTime();
+        const userRef: AngularFirestoreDocument<User> = this.afs.doc(
+          `users/${credential.user.uid}`
+        );
+        return userRef.set(content);
+      }).catch(error => {
+        console.log(error);
+      });
   }
 
   // updateUser(id: string, data: any) {

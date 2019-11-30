@@ -16,6 +16,12 @@ export class FirebaseService {
     return this.db.collection('users').doc(userKey).snapshotChanges();
   }
 
+  async getMeterDerails(condn){
+    // return this.db.collection('meterDetails').doc(userKey).snapshotChanges();
+    return this.db.collection('meterDetails').snapshotChanges();
+    
+  }
+
   updateUser(userKey, value){
     value.nameToSearch = value.name.toLowerCase();
     return this.db.collection('users').doc(userKey).set(value);
