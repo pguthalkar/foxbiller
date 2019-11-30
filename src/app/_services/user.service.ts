@@ -32,22 +32,12 @@ export class UserService {
   }
 
   getUserCondn(condn = null) {
-    return this.firestore.collection('users', (ref) => {
-      ref.where(condn.key, '==', condn.value);
-      return ref;
-    }).valueChanges()
+    return this.firestore.collection('users', ref => ref.where(condn.key, '==', condn.value)).valueChanges()
 
   }
 
   getMeterDetails(condn = null) {
-    return this.firestore.collection('meterDetails', ref => {
-     
-        ref.where(condn.key, '==', condn.value);
-      
-      // ref.orderBy('ReadingTime');
-      // ref.limit(1);
-      return ref;
-    }).valueChanges()
+    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value)).valueChanges()
 
   }
 

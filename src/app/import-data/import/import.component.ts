@@ -19,6 +19,7 @@ export class ImportComponent implements OnInit {
 
   tariffA = 0.435;
   tariffB = 0.509;
+  limitUsage = 200;
   availableFields = [
     {
       'name': 'CustomerName',
@@ -218,20 +219,47 @@ export class ImportComponent implements OnInit {
 
   }
 
+  // getDateDiffDays(date1:String , date2:String) {
+  //   return  
+  // }
+
   async calculateBillAmount(billdata) {
     let condn = //[
       {
         "key" : "CustomerNumber",
         "value" : billdata.CustomerNumber
       };
-    //   ,
-    //   {
-    //     "key" : "MeterSerialNumber",
-    //     "value" : billdata.MeterSerialNumber
-    //   }
-    // ];
-    await this.userService.getMeterDetails(condn).subscribe( meterData => {
-      console.log(meterData);
+
+    await this.userService.getMeterDetails(condn).subscribe( async meterData => {
+      let filteredMeterData = meterData.filter(element => {
+        let readingTime = new Date(billdata.ReadingTime.toString()); 
+        let lastReadingTime = new Date(element['ReadingTime'].toString()); 
+        var diff = Math.abs(readingTime.getTime() - lastReadingTime.getTime());
+        var diffDays = Math.ceil(diff / (1000 * 3600 * 24)); 
+        return diffDays <=31 && element['ElectricityEnergy'];
+      });
+      let selectedMeterData = filteredMeterData[0] ? filteredMeterData[0] : {};
+      if(selectedMeterData) {
+        let electicityUsage = billdata.ElectricityEnergy - selectedMeterData['ElectricityEnergy'];
+        let charges = 0;
+        if(electicityUsage <= this.limitUsage) {
+          charges = electicityUsage * this.tariffA;
+        } 
+        if(electicityUsage >= this.limitUsage) {
+          charges = charges + (electicityUsage - this.limitUsage) * this.tariffB;
+        }
+
+        //water bill calculation
+        
+        billdata['electricityCharges'] = charges;
+        await this.firebaseService.insertData(billdata, 'meterDetails')
+        .then(
+          res => {
+            // this.resetFields();
+            // this.router.navigate(['/home']);
+          }
+        );
+      }
       
       
       // let lastMonthEner
@@ -239,14 +267,7 @@ export class ImportComponent implements OnInit {
     });
     // console.log(meterData);
 
-     // await this.firebaseService.insertData(element, 'meterDetails')
-      //     .then(
-      //       res => {
-      //         console.log(res);
-      //         // this.resetFields();
-      //         // this.router.navigate(['/home']);
-      //       }
-      //     );
+    
 
   }
 
@@ -278,7 +299,7 @@ export class ImportComponent implements OnInit {
       });
 
       inputData.forEach(async (element) => {
-        let prev = await this.calculateBillAmount(element);
+        let charges = await this.calculateBillAmount(element);
 
         
 
