@@ -230,7 +230,7 @@ export class ImportComponent implements OnInit {
     //     "value" : billdata.MeterSerialNumber
     //   }
     // ];
-    await this.userService.getMeterDerails(condn).subscribe( meterData => {
+    await this.userService.getMeterDetails(condn).subscribe( meterData => {
       console.log(meterData);
       
       

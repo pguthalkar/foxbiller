@@ -39,11 +39,11 @@ export class UserService {
 
   }
 
-  getMeterDerails(condn = null) {
+  getMeterDetails(condn = null) {
     return this.firestore.collection('meterDetails', ref => {
-      condn.forEach(element => {
-        ref.where(element.key, '==', element.value);
-      });
+     
+        ref.where(condn.key, '==', condn.value);
+      
       // ref.orderBy('ReadingTime');
       // ref.limit(1);
       return ref;
