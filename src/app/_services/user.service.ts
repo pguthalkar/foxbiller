@@ -36,8 +36,12 @@ export class UserService {
 
   }
 
-  getMeterDetails(condn = null) {
-    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value)).valueChanges()
+  getMeterDetails(date = null) {
+    return this.firestore.collection('meterDetails', ref => ref.where("ReadingTimeTimestamp", '>=', date)).valueChanges();
+    // const ref2 =  this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value));
+    // var meterDetailsRef = this.firestore.collection('meterDetails');
+    // meterDetailsRef.where("ReadingTime",">",)
+    
 
   }
 

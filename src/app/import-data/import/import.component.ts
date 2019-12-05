@@ -3,6 +3,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 import { AlertService, FirebaseService } from '../../_services/index';
 import { UserService } from '../../_services/index';
+import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';  // RxJS 6 syntax
+
 @Component({
   selector: 'app-import',
   templateUrl: './import.component.html',
@@ -16,6 +20,8 @@ export class ImportComponent implements OnInit {
      ) { }
   csvFields = [
   ];
+  inputData = [];
+  arrBillsRequests = [];
 
   tariffA = 0.435;
   tariffB = 0.509;
@@ -224,47 +230,7 @@ export class ImportComponent implements OnInit {
   // }
 
   async calculateBillAmount(billdata) {
-    let condn = //[
-      {
-        "key" : "CustomerNumber",
-        "value" : billdata.CustomerNumber
-      };
-
-    await this.userService.getMeterDetails(condn).subscribe( async meterData => {
-      let filteredMeterData = meterData.filter(element => {
-        let readingTime = new Date(billdata.ReadingTime.toString()); 
-        let lastReadingTime = new Date(element['ReadingTime'].toString()); 
-        var diff = Math.abs(readingTime.getTime() - lastReadingTime.getTime());
-        var diffDays = Math.ceil(diff / (1000 * 3600 * 24)); 
-        return diffDays <=31 && element['ElectricityEnergy'];
-      });
-      let selectedMeterData = filteredMeterData[0] ? filteredMeterData[0] : {};
-      if(selectedMeterData) {
-        let electicityUsage = billdata.ElectricityEnergy - selectedMeterData['ElectricityEnergy'];
-        let charges = 0;
-        if(electicityUsage <= this.limitUsage) {
-          charges = electicityUsage * this.tariffA;
-        } 
-        if(electicityUsage >= this.limitUsage) {
-          charges = charges + (electicityUsage - this.limitUsage) * this.tariffB;
-        }
-
-        //water bill calculation
-        
-        billdata['electricityCharges'] = charges;
-        await this.firebaseService.insertData(billdata, 'meterDetails')
-        .then(
-          res => {
-            // this.resetFields();
-            // this.router.navigate(['/home']);
-          }
-        );
-      }
-      
-      
-      // let lastMonthEner
-
-    });
+   
     // console.log(meterData);
 
     
@@ -273,7 +239,7 @@ export class ImportComponent implements OnInit {
 
   async importData() {
     // console.log(this.availableFields);
-    let inputData = [];
+    // let inputData = [];
     let isError = false;
     for (let index = 0; index < this.availableFields.length; index++) {
 
@@ -293,18 +259,85 @@ export class ImportComponent implements OnInit {
           }
         });
         if (Object.keys(input).length > 0) {
-          inputData.push(input);
+          this.inputData.push(input);
         }
 
       });
 
-      inputData.forEach(async (element) => {
-        let charges = await this.calculateBillAmount(element);
 
-        
+      let lastmonthDate = new Date(this.inputData[0].ReadingTime);
+      lastmonthDate.setMonth(lastmonthDate.getMonth()-1);
+      this.userService.getMeterDetails(lastmonthDate.getTime()).subscribe(resData => {
+        console.log(resData);
+        let arrBilldata = {};
+        let resBillData = [];
+        resData.forEach( billdata=> {
+          arrBilldata[billdata['CustomerNumber']] = billdata;
+        })
+        this.inputData.forEach(inputBillData => {
+          resBillData.push(this.calculateBill(inputBillData,arrBilldata[inputBillData.CustomerNumber]));
+        });
+        console.log(resBillData);
 
       });
+      
+      let arrCustomerId = [];
+      /*
+      inputData.forEach(async (billdata) => {
+        // let charges = await this.calculateBillAmount(element);
+        billdata['ReadingTimeTimestamp'] = new Date(billdata.ReadingTime.toString()).getTime();
+        await this.firebaseService.insertData(billdata, 'meterDetails')
+        .then(
+          res => {
+            // this.resetFields();
+            // this.router.navigate(['/home']);
+          }
+        );
+        arrCustomerId.push(billdata.CustomerNumber);
+        // this.arrBillsRequests.push( await this.userService.getMeterDetails(condn));
+        
+
+      });*/
+
+      let condn = //[
+        {
+          "key" : "CustomerNumber",
+          "value" : arrCustomerId
+        };
+      // this.userService.getMeterDetails(condn);
+
+      // forkJoin(this.arrBillsRequests).subscribe(responseList => {
+      //   console.log(responseList);
+      // });
+      
     }
+  }
+
+  calculateBill(billdata, meterData) {
+    let filteredMeterData = meterData.filter(element => {
+      let readingTime = new Date(billdata.ReadingTime.toString()); 
+      let lastReadingTime = new Date(element['ReadingTime'].toString()); 
+      var diff = Math.abs(readingTime.getTime() - lastReadingTime.getTime());
+      var diffDays = Math.ceil(diff / (1000 * 3600 * 24)); 
+      return diffDays <=31 && element['ElectricityEnergy'];
+    });
+    let selectedMeterData = filteredMeterData[0] ? filteredMeterData[0] : {};
+    if(selectedMeterData) {
+      let electicityUsage = billdata.ElectricityEnergy - selectedMeterData['ElectricityEnergy'];
+      let charges = 0;
+      if(electicityUsage <= this.limitUsage) {
+        charges = electicityUsage * this.tariffA;
+      } 
+      if(electicityUsage >= this.limitUsage) {
+        charges = charges + (electicityUsage - this.limitUsage) * this.tariffB;
+      }
+
+      //water bill calculation
+      
+      billdata['electricityCharges'] = charges;
+     
+    }
+    return billdata;
   }
 
 }
