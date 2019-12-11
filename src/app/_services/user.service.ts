@@ -45,6 +45,8 @@ export class UserService {
 
   }
 
+ 
+
 
   // getUserByCondn(condn) {
   //   return this.firestore.collection('users').where("capital", "==", true).get();

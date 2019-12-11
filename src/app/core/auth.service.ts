@@ -137,6 +137,7 @@ export class AuthService {
   // If error, console log and notify user
   private handleError(error: Error) {
     console.error(error);
+    alert(error.message)
     this.notify.update(error.message, 'error');
   }
 

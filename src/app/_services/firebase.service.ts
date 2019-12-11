@@ -12,6 +12,14 @@ export class FirebaseService {
       return this.db.collection('/avatar').valueChanges()
   }
 
+  getMeterDetailCollection() {
+    return this.db.firestore.collection('meterDetails');
+  }
+
+  getBatch() {
+    return this.db.firestore.batch();
+  }
+
   getUser(userKey){
     return this.db.collection('users').doc(userKey).snapshotChanges();
   }

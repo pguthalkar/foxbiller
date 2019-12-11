@@ -15,14 +15,14 @@ import { forkJoin } from 'rxjs';  // RxJS 6 syntax
 export class ImportComponent implements OnInit {
   csvContent: string;
   constructor(private alertService: AlertService,
-     private firebaseService: FirebaseService,
-     private userService:UserService
-     ) { }
+    private firebaseService: FirebaseService,
+    private userService: UserService
+  ) { }
   csvFields = [
   ];
   inputData = [];
   arrBillsRequests = [];
-
+  flag = false;
   tariffA = 0.435;
   tariffB = 0.509;
   limitUsage = 200;
@@ -229,14 +229,6 @@ export class ImportComponent implements OnInit {
   //   return  
   // }
 
-  async calculateBillAmount(billdata) {
-   
-    // console.log(meterData);
-
-    
-
-  }
-
   async importData() {
     // console.log(this.availableFields);
     // let inputData = [];
@@ -264,78 +256,97 @@ export class ImportComponent implements OnInit {
 
       });
 
-
+      let meterDetailsCollection = this.firebaseService.getMeterDetailCollection();
+      
       let lastmonthDate = new Date(this.inputData[0].ReadingTime);
-      lastmonthDate.setMonth(lastmonthDate.getMonth()-1);
+      lastmonthDate.setMonth(lastmonthDate.getMonth() - 1);
       this.userService.getMeterDetails(lastmonthDate.getTime()).subscribe(resData => {
-        console.log(resData);
-        let arrBilldata = {};
-        let resBillData = [];
-        resData.forEach( billdata=> {
-          arrBilldata[billdata['CustomerNumber']] = billdata;
-        })
-        this.inputData.forEach(inputBillData => {
-          resBillData.push(this.calculateBill(inputBillData,arrBilldata[inputBillData.CustomerNumber]));
-        });
-        console.log(resBillData);
+        // console.log(resData);
+        var batch = this.firebaseService.getBatch();
+        if (resData && resData.length > 0) {
+          
+          let arrBilldata = {};
+          let resBillData = [];
+          resData.forEach(billdata => {
+            arrBilldata[billdata['CustomerNumber']] = billdata;
+          })
+          this.inputData.forEach(inputBillData => {
+            resBillData.push(this.calculateBill(inputBillData, arrBilldata[inputBillData.CustomerNumber]));
+          });
+
+          resBillData.forEach(async (billdata, index) => {
+            let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
+            let ref = meterDetailsCollection.doc(`${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`);
+
+            billdata['ReadingTimeTimestamp'] = readingTime;
+            batch.set(ref, billdata);
+          });
+          batch.commit().then(resData => {
+            console.log(resData);
+    
+          }).catch(err => {
+            console.log(err);
+          });
+
+
+        }
+        else {
+          this.inputData.forEach(async (billdata, index) => {
+            let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
+            let ref = meterDetailsCollection.doc(`${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`);
+
+            billdata['ReadingTimeTimestamp'] = readingTime;
+            batch.set(ref, billdata);
+          });
+          batch.commit().then(resData => {
+            console.log(resData);
+    
+          }).catch(err => {
+            console.log(err);
+          });
+        }
 
       });
-      
-      let arrCustomerId = [];
-      /*
-      inputData.forEach(async (billdata) => {
-        // let charges = await this.calculateBillAmount(element);
-        billdata['ReadingTimeTimestamp'] = new Date(billdata.ReadingTime.toString()).getTime();
-        await this.firebaseService.insertData(billdata, 'meterDetails')
-        .then(
-          res => {
-            // this.resetFields();
-            // this.router.navigate(['/home']);
-          }
-        );
-        arrCustomerId.push(billdata.CustomerNumber);
-        // this.arrBillsRequests.push( await this.userService.getMeterDetails(condn));
-        
+ 
 
-      });*/
 
-      let condn = //[
-        {
-          "key" : "CustomerNumber",
-          "value" : arrCustomerId
-        };
+
+
       // this.userService.getMeterDetails(condn);
 
       // forkJoin(this.arrBillsRequests).subscribe(responseList => {
       //   console.log(responseList);
       // });
-      
+
     }
   }
 
-  calculateBill(billdata, meterData) {
-    let filteredMeterData = meterData.filter(element => {
-      let readingTime = new Date(billdata.ReadingTime.toString()); 
-      let lastReadingTime = new Date(element['ReadingTime'].toString()); 
-      var diff = Math.abs(readingTime.getTime() - lastReadingTime.getTime());
-      var diffDays = Math.ceil(diff / (1000 * 3600 * 24)); 
-      return diffDays <=31 && element['ElectricityEnergy'];
-    });
-    let selectedMeterData = filteredMeterData[0] ? filteredMeterData[0] : {};
-    if(selectedMeterData) {
+  calculateBill(billdata, selectedMeterData) {
+   
+    if (selectedMeterData && billdata['ReadingTime'] != selectedMeterData['ReadingTime']) {
+      //electricity bill calculation
       let electicityUsage = billdata.ElectricityEnergy - selectedMeterData['ElectricityEnergy'];
       let charges = 0;
-      if(electicityUsage <= this.limitUsage) {
+      if (electicityUsage <= this.limitUsage) {
         charges = electicityUsage * this.tariffA;
-      } 
-      if(electicityUsage >= this.limitUsage) {
+      }
+      if (electicityUsage >= this.limitUsage) {
         charges = charges + (electicityUsage - this.limitUsage) * this.tariffB;
       }
 
       //water bill calculation
+      let waterUsage = billdata.ElectricityEnergy - selectedMeterData['ElectricityEnergy'];
+      //let charges = 0;
       
+      if (electicityUsage <= this.limitUsage) {
+        charges = electicityUsage * this.tariffA;
+      }
+      if (electicityUsage >= this.limitUsage) {
+        charges = charges + (electicityUsage - this.limitUsage) * this.tariffB;
+      }
+
       billdata['electricityCharges'] = charges;
-     
+
     }
     return billdata;
   }
