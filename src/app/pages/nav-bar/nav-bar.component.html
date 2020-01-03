@@ -5,7 +5,8 @@
       <span>Dashboard</span>
     </a>
   </li>
-  <li class="nav-item " [class.active]="importlink.classList.contains('active')" *ngIf="loggedInUser.role === 'master'">
+  <!-- {{loggedInUser.role}} -->
+  <li class="nav-item " [class.active]="importlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
     <a class="nav-link" #importlink routerLink="/import" routerLinkActive="active">
       <i class="fa fa-table"></i>
       <span>Import Data</span>

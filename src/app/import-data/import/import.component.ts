@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 // import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
-import { AlertService, FirebaseService } from '../../_services/index';
+import { AlertService, FirebaseService,SharedService } from '../../_services/index';
 import { UserService } from '../../_services/index';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
@@ -16,8 +16,13 @@ export class ImportComponent implements OnInit {
   csvContent: string;
   constructor(private alertService: AlertService,
     private firebaseService: FirebaseService,
-    private userService: UserService
-  ) { }
+    private userService: UserService,
+    private sharedService: SharedService
+  ) { 
+
+    this.userData = this.sharedService.getLocalStorage('user') ? JSON.parse(this.sharedService.getLocalStorage('user')) : {};
+  }
+  userData = {};
   csvFields = [
   ];
   inputData = [];
@@ -25,86 +30,105 @@ export class ImportComponent implements OnInit {
   flag = false;
   tariffA = 0.435;
   tariffB = 0.509;
+
+  waterTariff1 = 0.80;
+  waterTariff2 = 2;
+  waterTariff3 = 3;
+
+  minWaterCharge = 50;
+
   limitUsage = 200;
+  waterMaxBand1: number = 20;
+  waterMaxBand2: number = 35;
+  minWaterBill = 50;
+
+  heatMaxBand1: number = 100;
+  heatMaxBand2: number = 500;
+  minHeatBill = 0;
+  heatTariff1 = 1.50;
+  heatTariff2 = 2;
+  heatTariff3 = 3;
+
+
   availableFields = [
     {
       'name': 'CustomerName',
       'required': true,
-      'mapped': []
+      'mapped': ['Customer name']
     },
     {
       'name': 'CustomerNumber',
       'required': true,
-      'mapped': []
+      'mapped': ['Customer number']
     },
     {
       'name': 'MeterSerialNumber',
       'required': true,
-      'mapped': []
+      'mapped': ['Meter serial number']
     },
     {
       'name': 'MeterType',
       'required': true,
-      'mapped': []
+      'mapped': ['Meter type']
     },
     {
       'name': 'ReadingTime',
       'required': true,
-      'mapped': []
+      'mapped': ['Reading time']
     },
     {
       'name': 'ElectricityEnergy',
       'required': true,
-      'mapped': []
+      'mapped': ['Electricity energy']
     }, {
       'name': 'EUnit',
       'required': false,
-      'mapped': []
+      'mapped': ['Unit']
     },
     {
       'name': 'CoolingEnergy',
       'required': false,
-      'mapped': []
+      'mapped': ['Energy 3 Cooling energy']
     }, {
       'name': 'CUnit',
       'required': false,
-      'mapped': []
+      'mapped': ['CUnit']
     },
     {
       'name': 'Flow1',
       'required': false,
-      'mapped': []
+      'mapped': ['Flow 1']
     },
     {
       'name': 'VolumeWater',
       'required': false,
-      'mapped': []
+      'mapped': ['Volume Water']
     }, {
       'name': 'WUnit',
       'required': false,
-      'mapped': []
+      'mapped': ['WUnit']
     }, {
       'name': 'Temperature1',
       'required': false,
-      'mapped': []
+      'mapped': ['Temperature 1']
     }, {
       'name': 'T1Unit',
       'required': false,
-      'mapped': []
+      'mapped': ['T1Unit']
     },
     {
       'name': 'Temperature2',
       'required': false,
-      'mapped': []
+      'mapped': ['Temperature 2']
     }, {
       'name': 'T2Unit',
       'required': false,
-      'mapped': []
+      'mapped': ['T2Unit']
     },
     {
       'name': 'InfoCodes',
       'required': false,
-      'mapped': []
+      'mapped': ['Info codes']
     }
   ];
   inactiveCustomers = [];
@@ -192,6 +216,7 @@ export class ImportComponent implements OnInit {
   fileReset() {
     this.fileImportInput.nativeElement.value = "";
     this.csvRecords = [];
+    this.csvFields = [];
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -230,7 +255,8 @@ export class ImportComponent implements OnInit {
   // }
 
   async importData() {
-    // console.log(this.availableFields);
+    // console.log(this.userData);
+
     // let inputData = [];
     let isError = false;
     for (let index = 0; index < this.availableFields.length; index++) {
@@ -257,14 +283,14 @@ export class ImportComponent implements OnInit {
       });
 
       let meterDetailsCollection = this.firebaseService.getMeterDetailCollection();
-      
+
       let lastmonthDate = new Date(this.inputData[0].ReadingTime);
       lastmonthDate.setMonth(lastmonthDate.getMonth() - 1);
       this.userService.getMeterDetails(lastmonthDate.getTime()).subscribe(resData => {
         // console.log(resData);
         var batch = this.firebaseService.getBatch();
         if (resData && resData.length > 0) {
-          
+
           let arrBilldata = {};
           let resBillData = [];
           resData.forEach(billdata => {
@@ -279,11 +305,26 @@ export class ImportComponent implements OnInit {
             let ref = meterDetailsCollection.doc(`${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`);
 
             billdata['ReadingTimeTimestamp'] = readingTime;
+            billdata['uid'] = this.userData['uid'];
+            switch(billdata['MeterType']) {
+              case 'MULTICAL 602' : 
+                billdata['type'] = 'heat';
+                break;
+              case 'MULTICAL 62' : 
+                billdata['type'] = 'water';
+                break;
+              case 'OMNIPOWER' : 
+                billdata['type'] = 'electricity';
+                break;
+            }
+            
             batch.set(ref, billdata);
           });
           batch.commit().then(resData => {
             console.log(resData);
-    
+            this.fileReset();
+            this.alertService.success("Successfully Imported");
+
           }).catch(err => {
             console.log(err);
           });
@@ -300,14 +341,16 @@ export class ImportComponent implements OnInit {
           });
           batch.commit().then(resData => {
             console.log(resData);
-    
+            this.fileReset();
+            this.alertService.success("Successfully Imported");
+
           }).catch(err => {
             console.log(err);
           });
         }
 
       });
- 
+
 
 
 
@@ -322,30 +365,57 @@ export class ImportComponent implements OnInit {
   }
 
   calculateBill(billdata, selectedMeterData) {
-   
+
     if (selectedMeterData && billdata['ReadingTime'] != selectedMeterData['ReadingTime']) {
       //electricity bill calculation
       let electicityUsage = billdata.ElectricityEnergy - selectedMeterData['ElectricityEnergy'];
       let charges = 0;
+      let waterCharges = 0;
+      let heatCharges = 0;
       if (electicityUsage <= this.limitUsage) {
         charges = electicityUsage * this.tariffA;
       }
       if (electicityUsage >= this.limitUsage) {
-        charges = charges + (electicityUsage - this.limitUsage) * this.tariffB;
+        charges =  (this.limitUsage * this.tariffA) + (electicityUsage - this.limitUsage) * this.tariffB;
       }
+  
 
       //water bill calculation
-      let waterUsage = billdata.ElectricityEnergy - selectedMeterData['ElectricityEnergy'];
-      //let charges = 0;
-      
-      if (electicityUsage <= this.limitUsage) {
-        charges = electicityUsage * this.tariffA;
+      let waterUsage = billdata.VolumeWater - selectedMeterData['VolumeWater'];
+      if (waterUsage > 0 && waterUsage <= this.waterMaxBand1) {
+        waterCharges = waterUsage * this.waterTariff1;
       }
-      if (electicityUsage >= this.limitUsage) {
-        charges = charges + (electicityUsage - this.limitUsage) * this.tariffB;
+      if (waterUsage > this.waterMaxBand1 && waterUsage <= this.waterMaxBand2) {
+        waterCharges = (this.waterMaxBand1 * this.waterTariff1) + ((waterUsage - this.waterMaxBand1) * this.waterTariff2);
+      }
+      if (waterUsage > this.waterMaxBand2) {
+        waterCharges = (this.waterMaxBand1 * this.waterTariff1) + ((this.waterMaxBand2 - this.waterMaxBand1) * this.waterTariff2) + ((waterUsage - this.waterMaxBand2) * this.waterTariff3);
+      }
+      if (waterCharges < this.minWaterBill) {
+        waterCharges = this.minWaterBill;
       }
 
+
+      //heat bill calculation
+      let heatUsage = billdata.CoolingEnergy - selectedMeterData['CoolingEnergy'];
+      if (heatUsage > 0 && heatUsage <= this.heatMaxBand1) {
+        heatCharges = heatUsage * this.heatTariff1;
+      }
+      if (heatUsage > this.heatMaxBand1 && heatUsage <= this.heatMaxBand2) {
+        heatCharges = (this.heatMaxBand1 * this.heatTariff1) + ((heatUsage - this.heatMaxBand1) * this.heatTariff2);
+      }
+      if (heatUsage > this.heatMaxBand2) {
+        heatCharges = (this.heatMaxBand1 * this.heatTariff1) + ((this.heatMaxBand2 - this.heatMaxBand1) * this.heatTariff2) + (heatUsage * this.heatTariff3);
+      }
+      if (heatCharges < this.minHeatBill) {
+        heatCharges = this.minHeatBill;
+      }
+
+
+
       billdata['electricityCharges'] = charges;
+      billdata['waterCharges'] = waterCharges;
+      billdata['HeatCharges'] = heatCharges;
 
     }
     return billdata;

@@ -1,0 +1,51 @@
+<div class="container-fluid">
+
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/meter">Meter Details</a>
+      </li>
+      <li class="breadcrumb-item active">Overview</li>
+    </ol>
+  
+    <!-- <alert></alert>  -->
+  
+    <div class="card-body">
+      <button  mat-raised-button color="primary" class="button is-success" (click)="addUserNavigate()" *ngIf="loggedInUser.role == 'admin' || loggedInUser.role == 'master'">
+        Add Meter
+      </button>
+      <hr>
+      <div class="mat-elevation-z8">
+  
+        <table mat-table [dataSource]="dataSource">
+  
+          <!--- Note that these columns can be defined in any order.
+                    The actual rendered columns are set as a property on the row definition" -->
+  
+          <!-- Position Column -->
+          <ng-container matColumnDef="MeterSerialNumber">
+            <th mat-header-cell *matHeaderCellDef> Meter number</th>
+            <td mat-cell *matCellDef="let element"> {{element.MeterSerialNumber}} </td>
+          </ng-container>
+  
+          <!-- Name Column -->
+          <ng-container matColumnDef="ReadingTime">
+            <th mat-header-cell *matHeaderCellDef> Last Reading time </th>
+            <td mat-cell *matCellDef="let element"> {{element.ReadingTime}} </td>
+          </ng-container>
+  
+          <!-- Weight Column -->
+          <ng-container matColumnDef="CustomerName">
+            <th mat-header-cell *matHeaderCellDef> Customer Name </th>
+            <td mat-cell *matCellDef="let element"> {{element.CustomerName}} </td>
+          </ng-container>
+  
+  
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+      </div>
+    </div>
+  
+  </div>

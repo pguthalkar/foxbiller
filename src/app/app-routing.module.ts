@@ -6,6 +6,7 @@ const routes: Routes = [
   { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule'},
   { path: 'import', loadChildren: './import-data/import-data.module#ImportDataModule'},
   { path: 'users', loadChildren: './users/users.module#UsersModule'},
+  { path: 'meter', loadChildren: './meter-details/meter-details.module#MeterDetailsModule'},
   { path: 'login', component: UserLoginComponent },
 ];
 
