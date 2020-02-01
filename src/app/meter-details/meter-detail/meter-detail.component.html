@@ -1,0 +1,78 @@
+<div class="container-fluid">
+  <!-- Breadcrumbs-->
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a routerLink="/meter">Meter Details</a>
+    </li>
+    <li class="breadcrumb-item active">Overview</li>
+  </ol>
+  <div class="available-container">
+    <h3>#{{ meterData['MeterSerialNumber'] }}</h3>
+    <span>{{ sharedService.changeCaseFirstLetter(meterData['type']) }}</span>
+  </div>
+
+  <!-- <alert></alert>  -->
+
+  <div class="card-body">
+    <mat-grid-list cols="4" rowHeight="6:2">
+      <mat-grid-tile [colspan]="1" [rowspan]="1">
+        <span>
+          <strong> Last Meter Reading </strong>: {{ meterData['ReadingTime'] | date:'MMM d, y' }}
+        </span>
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="2" [rowspan]="1">
+        <mat-chip-list>
+          <mat-chip color="primary" selected> Emailed </mat-chip>
+        </mat-chip-list>
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="1" [rowspan]="3">
+        <mat-list>
+          <mat-list-item>
+            <span>
+              <strong>Customer</strong>&nbsp;:&nbsp;
+          {{ meterData['CustomerName'] }}</span>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            <span>
+              <strong>Customer No.</strong>&nbsp;:&nbsp;
+            </span>
+            <span>#{{ meterData['CustomerNumber'] }}</span>
+          </mat-list-item>
+        </mat-list>
+      </mat-grid-tile>
+      <!-- <mat-grid-tile [colspan]="1" [rowspan]="1">2</mat-grid-tile>
+      <mat-grid-tile [colspan]="1" [rowspan]="1">3</mat-grid-tile> -->
+
+      <!-- <mat-grid-tile [colspan]="1" [rowspan]="3"> 4</mat-grid-tile> -->
+      <!-- <mat-grid-tile [colspan]="1" [rowspan]="1">
+        right panel
+      </mat-grid-tile> -->
+      <mat-grid-tile [colspan]="1" [rowspan]="1">
+        <mat-list>
+          <mat-list-item>
+            <span>
+              <strong> {{ getCharges(meterData) | currency }}</strong>
+            </span>
+          </mat-list-item>
+          <mat-list-item>
+            <span>{{ meterData['type'] }} Bill Amount</span>
+          </mat-list-item>
+        </mat-list>
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="1" [rowspan]="1">
+        <mat-list>
+          <mat-list-item
+            ><span>
+              <strong> {{ getReadingCount(meterData) }}</strong></span
+            ></mat-list-item
+          >
+          <mat-list-item
+            ><span>{{ getUnit(meterData) }}</span></mat-list-item
+          >
+        </mat-list>
+      </mat-grid-tile>
+      <!-- <mat-grid-tile>4</mat-grid-tile> -->
+    </mat-grid-list>
+  </div>
+</div>

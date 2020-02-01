@@ -1,0 +1,13 @@
+mat-grid-tile {
+  border: 1px #0000
+
+}
+ .mat-list-base .mat-list-item .mat-list-item-content, .mat-list-base .mat-list-option .mat-list-item-content {
+  display: block !important;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 16px;
+  position: relative;
+  height: inherit;
+}

@@ -1,13 +1,27 @@
 <ul class="sidebar navbar-nav">
   <li class="nav-item " [class.active]="homeLink.classList.contains('active')">
-    <a class="nav-link" #homeLink routerLink="/dashboard" routerLinkActive="active">
+    <a
+      class="nav-link"
+      #homeLink
+      routerLink="/dashboard"
+      routerLinkActive="active"
+    >
       <i class="fas fa-fw fa-tachometer-alt"></i>
       <span>Dashboard</span>
     </a>
   </li>
   <!-- {{loggedInUser.role}} -->
-  <li class="nav-item " [class.active]="importlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
-    <a class="nav-link" #importlink routerLink="/import" routerLinkActive="active">
+  <li
+    class="nav-item "
+    [class.active]="importlink.classList.contains('active')"
+    *ngIf="loggedInUser.role === 'admin'"
+  >
+    <a
+      class="nav-link"
+      #importlink
+      routerLink="/import"
+      routerLinkActive="active"
+    >
       <i class="fa fa-table"></i>
       <span>Import Data</span>
     </a>
@@ -15,7 +29,53 @@
   <li class="nav-item " [class.active]="userlink.classList.contains('active')">
     <a class="nav-link" #userlink routerLink="/users" routerLinkActive="active">
       <i class="fa fa-user"></i>
-      <span>Users</span>
+      <span>Customers</span>
+    </a>
+  </li>
+
+  <li class="nav-item " [class.active]="meterlink.classList.contains('active')">
+    <a
+      class="nav-link"
+      #meterlink
+      routerLink="/meter"
+      routerLinkActive="active"
+    >
+      <i class="fa fa-square"></i>
+      <span>All Meter</span>
+    </a>
+  </li>
+
+  <li class="nav-item " [class.active]="heatmeterlink.classList.contains('active')">
+    <a
+      class="nav-link"
+      #heatmeterlink
+      href="/meter/filter/heat"
+      routerLinkActive="active"
+    >
+      <i class="fa fa-square"></i>
+      <span>Heat Meter</span>
+    </a>
+  </li>
+  <li class="nav-item " [class.active]="watermeterlink.classList.contains('active')">
+    <a
+      class="nav-link"
+      #watermeterlink
+      href="/meter/filter/water"
+      routerLinkActive="active"
+    >
+      <i class="fa fa-square"></i>
+      <span>Water Meter</span>
+    </a>
+  </li>
+  <li class="nav-item " [class.active]="electicitymeterlink.classList.contains('active')">
+    <a
+      class="nav-link"
+      #electicitymeterlink
+      href="/meter/filter/electricity"
+      routerLinkActive="active"
+    >
+      <i class="fa fa-square"></i>
+      <span>Electricity Meter</span>
     </a>
   </li>
   <!-- <li class="nav-item dropdown">

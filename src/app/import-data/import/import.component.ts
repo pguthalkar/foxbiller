@@ -79,7 +79,7 @@ export class ImportComponent implements OnInit {
     {
       'name': 'ElectricityEnergy',
       'required': true,
-      'mapped': ['Electricity energy']
+      'mapped': ['Energy Electricity energy']
     }, {
       'name': 'EUnit',
       'required': false,
@@ -140,7 +140,10 @@ export class ImportComponent implements OnInit {
   @ViewChild('fileImportInput', { static: true }) fileImportInput: any;
 
   fileChangeListener($event: any): void {
-
+    this.availableFields.map(element => {
+      element.mapped = [];
+      
+    });
     let text = [];
     let files = $event.srcElement.files;
 
@@ -302,10 +305,12 @@ export class ImportComponent implements OnInit {
 
           resBillData.forEach(async (billdata, index) => {
             let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
-            let ref = meterDetailsCollection.doc(`${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`);
+            let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
+            let ref = meterDetailsCollection.doc(docId);
 
             billdata['ReadingTimeTimestamp'] = readingTime;
             billdata['uid'] = this.userData['uid'];
+            billdata['_id'] = docId;
             switch(billdata['MeterType']) {
               case 'MULTICAL 602' : 
                 billdata['type'] = 'heat';

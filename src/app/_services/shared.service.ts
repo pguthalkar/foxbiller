@@ -21,4 +21,11 @@ export class SharedService {
     return this.localStorageData;
   }
 
+  changeCaseFirstLetter(params) {
+    if (typeof params === 'string') {
+      return params.charAt(0).toUpperCase() + params.slice(1);
+    }
+    return null;
+  }
+
 }

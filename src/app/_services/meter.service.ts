@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 
-import { Observable } from 'rxjs';
+import { Observable,BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { auth } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -14,6 +14,7 @@ export class MeterService {
 
   meterCollection: AngularFirestoreCollection<any>;
   noteDocument: AngularFirestoreDocument<any>;
+  private meterDataSubject = new BehaviorSubject([]);
   arrUsers;
   constructor(private firestore: AngularFirestore, private afAuth: AngularFireAuth,
     private afAuth2: AngularFireAuth,
@@ -31,11 +32,17 @@ export class MeterService {
     return this.firestore.collection('meterDetails').valueChanges();
   }
 
-  getUserCondn(condn = null) {
+  getMeterDetailCondn(condn = null) {
     return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value)).valueChanges()
 
   }
+  updateMeterSata(data:[]) {
+    this.meterDataSubject.next(data);
+  }
 
+  getUpdatedMeterData() {
+    return this.meterDataSubject.asObservable();
+  }
   getMeterDetails(date = null) {
     return this.firestore.collection('meterDetails', ref => ref.where("ReadingTimeTimestamp", '>=', date)).valueChanges();
     // const ref2 =  this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value));

@@ -4,7 +4,7 @@ import { AuthGuard } from '../core/auth.guard';
 import { ImportComponent } from './import/import.component';
 const routes: Routes = [
   {
-    path: '',
+    path: 'import',
     component : ImportComponent,canActivate: [AuthGuard]
   },
 ];

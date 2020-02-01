@@ -65,7 +65,7 @@
     cursor: move;
     background: white;
     font-size: 14px;
-    height: 40px;
+    height: 42px;
   }
   .cdk-drag-preview {
     box-sizing: border-box;
