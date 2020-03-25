@@ -1,66 +1,95 @@
 <div class="container-fluid">
+  <!-- Breadcrumbs-->
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a routerLink="/meter">Meter Details</a>
+    </li>
+  </ol>
 
-    <!-- Breadcrumbs-->
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item">
-        <a routerLink="/meter">Meter Details</a>
-      </li>
-    </ol>
-  
-    <!-- <alert></alert>  -->
-  
-    <div class="card-body">
-      <!-- <button  mat-raised-button color="primary" class="button is-success" (click)="addUserNavigate()" *ngIf="loggedInUser.role == 'admin' || loggedInUser.role == 'master'">
-        Add Meter
-      </button> -->
+  <!-- <alert></alert>  -->
 
-      <mat-form-field>
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-      </mat-form-field>
-      <hr>
-      <div class="example-container mat-elevation-z8">
-  
-        <table mat-table [dataSource]="dataSource">
-  
-          <!--- Note that these columns can be defined in any order.
+  <div fxLayout="row" >
+     
+    <button
+      mat-raised-button
+      color="primary"
+      class="button is-success"
+      (click)="addImportNavigate()"
+    >
+      Import
+    </button>
+
+    <mat-form-field>
+      <input
+        matInput
+        (keyup)="applyFilter($event.target.value)"
+        placeholder="Filter"
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Bulk action</mat-label>
+      <select matNativeControl required>
+        <option value="email">Bill selected with email</option>
+        <option value="print">Bill selected with print</option>
+      </select>
+    </mat-form-field>
+    <hr />
+    <div class="example-container mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource">
+        <!--- Note that these columns can be defined in any order.
                     The actual rendered columns are set as a property on the row definition" -->
-  
-          <!-- Position Column -->
-          <ng-container matColumnDef="MeterSerialNumber">
-            <th mat-header-cell *matHeaderCellDef> Meter number</th>
-            <td mat-cell *matCellDef="let element"> <a [routerLink]="['/meter/detail', element._id]">{{element.MeterSerialNumber}} </a> </td>
-          </ng-container>
-  
-          <!-- Name Column -->
-          <ng-container matColumnDef="ReadingTime">
-            <th mat-header-cell *matHeaderCellDef> Last Reading time </th>
-            <td mat-cell *matCellDef="let element"> {{element.ReadingTime}} </td>
-          </ng-container>
-  
-          <!-- Weight Column -->
-          <ng-container matColumnDef="CustomerName">
-            <th mat-header-cell *matHeaderCellDef> Customer Name </th>
-            <td mat-cell *matCellDef="let element"> {{element.CustomerName}} </td>
-          </ng-container>
+        <ng-container matColumnDef="Select">
+          <th mat-header-cell *matHeaderCellDef><mat-checkbox></mat-checkbox></th>
+          <td mat-cell *matCellDef="let element"><mat-checkbox></mat-checkbox></td>
+        </ng-container>
 
-           <!-- Weight Column -->
-           <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef> Meter Type </th>
-            <td mat-cell *matCellDef="let element"> {{sharedService.changeCaseFirstLetter(element.type)}} </td>
-          </ng-container>
+        <!-- Position Column -->
+        <ng-container matColumnDef="MeterSerialNumber">
+          <th mat-header-cell *matHeaderCellDef>Meter number</th>
+          <td mat-cell *matCellDef="let element">
+            <a [routerLink]="['/meter/detail', element._id]"
+              >{{ element.MeterSerialNumber }}
+            </a>
+          </td>
+        </ng-container>
 
-          <!-- Weight Column -->
-          <ng-container matColumnDef="meterCondition">
-            <th mat-header-cell *matHeaderCellDef> Meter Condition </th>
-            <td mat-cell *matCellDef="let element"> OK</td>
-          </ng-container>
-  
-  
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
-      </div>
+        <!-- Name Column -->
+        <ng-container matColumnDef="ReadingTime">
+          <th mat-header-cell *matHeaderCellDef>Last Reading time</th>
+          <td mat-cell *matCellDef="let element">{{ element.ReadingTime }}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="CustomerName">
+          <th mat-header-cell *matHeaderCellDef>Customer Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.CustomerName }}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Meter Type</th>
+          <td mat-cell *matCellDef="let element">{{ element.type }}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Meter status</th>
+          <td mat-cell *matCellDef="let element">{{ element.status }}</td>
+        </ng-container>
+        <!-- Weight Column -->
+        <ng-container matColumnDef="meterCondition">
+          <th mat-header-cell *matHeaderCellDef>Meter Condition</th>
+          <td mat-cell *matCellDef="let element">OK</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons
+      ></mat-paginator>
     </div>
-  
   </div>
+</div>

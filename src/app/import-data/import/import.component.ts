@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 // import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
-import { AlertService, FirebaseService,SharedService } from '../../_services/index';
+import { AlertService, FirebaseService, SharedService } from '../../_services/index';
 import { UserService } from '../../_services/index';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
@@ -18,7 +18,7 @@ export class ImportComponent implements OnInit {
     private firebaseService: FirebaseService,
     private userService: UserService,
     private sharedService: SharedService
-  ) { 
+  ) {
 
     this.userData = this.sharedService.getLocalStorage('user') ? JSON.parse(this.sharedService.getLocalStorage('user')) : {};
   }
@@ -142,7 +142,7 @@ export class ImportComponent implements OnInit {
   fileChangeListener($event: any): void {
     this.availableFields.map(element => {
       element.mapped = [];
-      
+
     });
     let text = [];
     let files = $event.srcElement.files;
@@ -258,6 +258,11 @@ export class ImportComponent implements OnInit {
   // }
 
   async importData() {
+    let currentDay = new Date().getDate();
+    // if(currentDay <= 26) {
+    //   this.alertService.error("You can import data only after 26th Date of each month");
+    //       return false;
+    // } 
     // console.log(this.userData);
 
     // let inputData = [];
@@ -289,7 +294,25 @@ export class ImportComponent implements OnInit {
 
       let lastmonthDate = new Date(this.inputData[0].ReadingTime);
       lastmonthDate.setMonth(lastmonthDate.getMonth() - 1);
+      let inputDate = new Date(this.inputData[0].ReadingTime);
+      let inputMonth = inputDate.getMonth();
       this.userService.getMeterDetails(lastmonthDate.getTime()).subscribe(resData => {
+        let currentMonthData = resData.find(data => {
+          if (new Date(data['ReadingTime']).getMonth() == inputMonth) {
+            return false;
+          }
+          if ( this.dateDiffIndays(new Date(data['ReadingTime']),inputDate) < 25 ) {
+            return false;
+          }
+          return true;
+        });
+
+
+        if (currentMonthData) {
+          console.log('data is already there');
+          this.alertService.error("Cannot import this data for this month.");
+          return false;
+        }
         // console.log(resData);
         var batch = this.firebaseService.getBatch();
         if (resData && resData.length > 0) {
@@ -311,18 +334,18 @@ export class ImportComponent implements OnInit {
             billdata['ReadingTimeTimestamp'] = readingTime;
             billdata['uid'] = this.userData['uid'];
             billdata['_id'] = docId;
-            switch(billdata['MeterType']) {
-              case 'MULTICAL 602' : 
+            switch (billdata['MeterType']) {
+              case 'MULTICAL 602':
                 billdata['type'] = 'heat';
                 break;
-              case 'MULTICAL 62' : 
+              case 'MULTICAL 62':
                 billdata['type'] = 'water';
                 break;
-              case 'OMNIPOWER' : 
+              case 'OMNIPOWER':
                 billdata['type'] = 'electricity';
                 break;
             }
-            
+
             batch.set(ref, billdata);
           });
           batch.commit().then(resData => {
@@ -338,14 +361,33 @@ export class ImportComponent implements OnInit {
         }
         else {
           this.inputData.forEach(async (billdata, index) => {
+            // let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
+            // let ref = meterDetailsCollection.doc(`${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`);
+
+            // billdata['ReadingTimeTimestamp'] = readingTime;
+
             let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
-            let ref = meterDetailsCollection.doc(`${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`);
+            let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
+            let ref = meterDetailsCollection.doc(docId);
 
             billdata['ReadingTimeTimestamp'] = readingTime;
+            billdata['uid'] = this.userData['uid'];
+            billdata['_id'] = docId;
+            switch (billdata['MeterType']) {
+              case 'MULTICAL 602':
+                billdata['type'] = 'heat';
+                break;
+              case 'MULTICAL 62':
+                billdata['type'] = 'water';
+                break;
+              case 'OMNIPOWER':
+                billdata['type'] = 'electricity';
+                break;
+            }
             batch.set(ref, billdata);
           });
           batch.commit().then(resData => {
-            console.log(resData);
+            // console.log(resData);
             this.fileReset();
             this.alertService.success("Successfully Imported");
 
@@ -369,6 +411,11 @@ export class ImportComponent implements OnInit {
     }
   }
 
+  dateDiffIndays(date1, date2) {
+    let dt1 = new Date(date1);
+    let dt2 = new Date(date2);
+    return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
+  }
   calculateBill(billdata, selectedMeterData) {
 
     if (selectedMeterData && billdata['ReadingTime'] != selectedMeterData['ReadingTime']) {
@@ -381,9 +428,9 @@ export class ImportComponent implements OnInit {
         charges = electicityUsage * this.tariffA;
       }
       if (electicityUsage >= this.limitUsage) {
-        charges =  (this.limitUsage * this.tariffA) + (electicityUsage - this.limitUsage) * this.tariffB;
+        charges = (this.limitUsage * this.tariffA) + (electicityUsage - this.limitUsage) * this.tariffB;
       }
-  
+
 
       //water bill calculation
       let waterUsage = billdata.VolumeWater - selectedMeterData['VolumeWater'];

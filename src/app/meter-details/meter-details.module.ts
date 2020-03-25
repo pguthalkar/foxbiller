@@ -4,7 +4,7 @@ import { ListMetersComponent } from './list-meters/list-meters.component';
 import { AlertService,SharedService,MeterService } from '../_services/index';
 
 import { MeterRoutingModule } from './meter-routing.module';
-import { MatTableModule,MatSortModule,MatGridListModule, MatFormFieldModule, MatSelectModule, MatInputModule,  MatDatepickerModule, MatNativeDateModule, MatCardModule,MatButtonModule,MatPaginatorModule,MatChipsModule,MatListModule,MatDividerModule } from '@angular/material';
+import { MatTableModule,MatCheckboxModule, MatSortModule,MatGridListModule, MatFormFieldModule, MatSelectModule, MatInputModule,  MatDatepickerModule, MatNativeDateModule, MatCardModule,MatButtonModule,MatPaginatorModule,MatChipsModule,MatListModule,MatDividerModule } from '@angular/material';
 // import { AddUserComponent } from './add-user/add-user.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MeterDetailComponent } from './meter-detail/meter-detail.component';
@@ -28,7 +28,8 @@ import { MeterDetailComponent } from './meter-detail/meter-detail.component';
     MatGridListModule,
     MatChipsModule,
     MatListModule,
-    MatDividerModule
+    MatDividerModule,
+    MatCheckboxModule
   ],
   providers: [
     AlertService,
