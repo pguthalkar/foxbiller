@@ -35,7 +35,7 @@
     </mat-form-field>
     <hr />
     <div class="example-container mat-elevation-z8">
-      <table mat-table [dataSource]="dataSource">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
         <!--- Note that these columns can be defined in any order.
                     The actual rendered columns are set as a property on the row definition" -->
         <ng-container matColumnDef="Select">
@@ -45,7 +45,7 @@
 
         <!-- Position Column -->
         <ng-container matColumnDef="MeterSerialNumber">
-          <th mat-header-cell *matHeaderCellDef>Meter number</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Meter number</th>
           <td mat-cell *matCellDef="let element">
             <a [routerLink]="['/meter/detail', element._id]"
               >{{ element.MeterSerialNumber }}
@@ -55,30 +55,30 @@
 
         <!-- Name Column -->
         <ng-container matColumnDef="ReadingTime">
-          <th mat-header-cell *matHeaderCellDef>Last Reading time</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Reading time</th>
           <td mat-cell *matCellDef="let element">{{ element.ReadingTime }}</td>
         </ng-container>
 
         <!-- Weight Column -->
-        <ng-container matColumnDef="CustomerName">
-          <th mat-header-cell *matHeaderCellDef>Customer Name</th>
+        <ng-container matColumnDef="CustomerName" >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer Name</th>
           <td mat-cell *matCellDef="let element">{{ element.CustomerName }}</td>
         </ng-container>
 
         <!-- Weight Column -->
         <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>Meter Type</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Meter Type</th>
           <td mat-cell *matCellDef="let element">{{ element.type }}</td>
         </ng-container>
 
         <!-- Weight Column -->
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Meter status</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Meter status</th>
           <td mat-cell *matCellDef="let element">{{ element.status }}</td>
         </ng-container>
         <!-- Weight Column -->
         <ng-container matColumnDef="meterCondition">
-          <th mat-header-cell *matHeaderCellDef>Meter Condition</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Meter Condition</th>
           <td mat-cell *matCellDef="let element">OK</td>
         </ng-container>
 

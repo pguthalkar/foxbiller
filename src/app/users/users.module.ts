@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { UsersRoutingModule } from './users-routing.module';
 import { ListUserComponent } from './list-user/list-user.component';
 import { AlertService, UserService,SharedService } from '../_services/index';
-import { MatTableModule, MatFormFieldModule, MatSelectModule, MatInputModule,  MatDatepickerModule, MatNativeDateModule, MatCardModule,MatButtonModule,MatPaginatorModule ,MatGridListModule} from '@angular/material';
+import { MatTableModule, MatFormFieldModule, MatSelectModule, MatInputModule,  MatDatepickerModule, MatNativeDateModule, MatCardModule,MatButtonModule,MatPaginatorModule ,MatGridListModule,MatSortModule} from '@angular/material';
 import { AddUserComponent } from './add-user/add-user.component';
 import { ReactiveFormsModule } from '@angular/forms';
 @NgModule({
@@ -22,7 +22,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatCardModule,
     MatButtonModule,
     MatPaginatorModule,
-    MatGridListModule
+    MatGridListModule,
+    MatSortModule
   ],
   providers: [
     AlertService,

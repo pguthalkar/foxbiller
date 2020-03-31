@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../../_services/user.service';
 import {MatPaginator} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatTableDataSource,MatSort} from '@angular/material';
 import { Observable } from 'rxjs';
 import 'rxjs/add/observable/of';
 import {DataSource} from '@angular/cdk/collections';
@@ -17,8 +17,11 @@ export class ListUserComponent implements OnInit {
 
   dataSource;
   loggedInUser;
-  displayedColumns = ['name', 'email', 'role'];
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  displayedColumns = ['name', 'email', 'role','company'];
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+
+  // @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(private userService: UserService, private router: Router,) { }
   
@@ -33,6 +36,8 @@ export class ListUserComponent implements OnInit {
         this.users = userData;
         
         this.dataSource = new MatTableDataSource<any>(this.users);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
       });
     }
     else {
@@ -40,6 +45,8 @@ export class ListUserComponent implements OnInit {
         this.users = userData;
         
         this.dataSource = new MatTableDataSource<any>(this.users);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
       });
     }
     
@@ -49,6 +56,13 @@ export class ListUserComponent implements OnInit {
   addUserNavigate() {
     this.router.navigate(['/users/add']);  
   }
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
+  }
+
 
 }
 
