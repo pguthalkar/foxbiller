@@ -150,7 +150,7 @@
                             <mat-card >
                                 <div formArrayName="meters">
                             
-                                    <mat-card-content *ngFor="let meter of userForm.controls.meters.controls; let i=index">
+                                    <mat-card-content *ngFor="let meter of userForm.get('meters')['controls']; let i=index">
                                         <div fxLayout="column" [formGroupName]="i">
                                             <mat-form-field>
                                                 <input matInput type="text" placeholder="Meter Id" formControlName="meterId" id="meterId">
@@ -166,14 +166,14 @@
                                                         </mat-option>
                                                     </mat-select>
                                                 </mat-form-field>
-                                                <button mat-raised-button color="danger" *ngIf = "userForm.controls['meters'].length > 1" type="button" (click)="removeMeter(i)"> Remove </button>
+                                                <button mat-raised-button color="danger" *ngIf = "isRemoveMeterButton" type="button" (click)="removeMeter(i)"> Remove </button>
                                                 
                                         </div>
                                    
     
                                     </mat-card-content>
                                 </div>
-                                <mat-card-actions align="center" *ngIf = "userForm.controls['meters'].length < 3">
+                                <mat-card-actions align="center" *ngIf = "isAddMeterButton">
                                     <button mat-raised-button color="primary" type="button" (click)="addMeter()"> Add Meter </button>
                                 </mat-card-actions>    
                                    
