@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { MeterService, SharedService } from '../../_services/index';
 import { MatPaginator, MatSort } from '@angular/material';
 import { MatTableDataSource } from '@angular/material/table';
-import { Observable, of , pipe} from 'rxjs';
-import { filter, map  } from 'rxjs/operators';
+import { Observable, of, pipe } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import 'rxjs/add/observable/of';
 import { ActivatedRoute } from '@angular/router';
 @Component({
@@ -19,7 +19,7 @@ export class ListMetersComponent implements OnInit {
 
   dataSource;
   loggedInUser;
-  displayedColumns = ['Select','MeterSerialNumber', 'ReadingTime', 'CustomerName', 'type','status', 'meterCondition'];
+  displayedColumns = ['Select', 'MeterSerialNumber', 'ReadingTime', 'CustomerName', 'type', 'status', 'meterCondition'];
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -41,7 +41,7 @@ export class ListMetersComponent implements OnInit {
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
-  
+
 
   ngOnInit() {
     const nums = of(1, 2, 3, 4, 5);
@@ -51,10 +51,10 @@ export class ListMetersComponent implements OnInit {
     );
 
     // Create an Observable that will run the filter and map functions
-const squareOdd = squareOddVals(nums);
+    const squareOdd = squareOddVals(nums);
 
-// Subscribe to run the combined functions
-squareOdd.subscribe(x => console.log(x));
+    // Subscribe to run the combined functions
+    squareOdd.subscribe(x => console.log(x));
     const type: string = this.route.snapshot.paramMap.get('type');
     this.loggedInUser = JSON.parse(localStorage.getItem('user'));
     let condn = {
@@ -62,7 +62,7 @@ squareOdd.subscribe(x => console.log(x));
       'value': this.loggedInUser.uid
     }
     if (type) {
-      this.meterService.getMeterDetailCondn({'key': 'type', 'value':type}).subscribe(meterData => {
+      this.meterService.getMeterDetailCondn({ 'key': 'type', 'value': type }).subscribe(meterData => {
         this.meters = meterData;
         this.dataSource = new MatTableDataSource<any>(this.meters);
         this.dataSource.paginator = this.paginator;
@@ -73,10 +73,10 @@ squareOdd.subscribe(x => console.log(x));
       var date = new Date();
       let currentDate = new Date(date.getFullYear(), date.getMonth(), 1).getTime();
       this.meterService.getAllMeter().subscribe(meterData => {
-      
-        let arrMeter = this.removeDuplicates(meterData,'MeterSerialNumber');
-        this.meters = arrMeter.map( meter => {
-          if(meter['ReadingTimeTimestamp'] >= currentDate) {
+
+        let arrMeter = this.removeDuplicates(meterData, 'MeterSerialNumber');
+        this.meters = arrMeter.map(meter => {
+          if (meter['ReadingTimeTimestamp'] >= currentDate) {
             meter['status'] = 'read';
           }
           else {
