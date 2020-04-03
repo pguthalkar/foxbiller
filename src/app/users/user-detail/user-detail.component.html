@@ -1,0 +1,114 @@
+<div class="container-fluid">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/users">Users </a>
+      </li>
+      <li class="breadcrumb-item active">Overview</li>
+    </ol>
+
+    <div class="container">
+        <div class="row ">
+            <div class="col-md-10">
+                <span class="header-title">{{userData.name}}</span> 
+                <span> active</span>
+            </div>
+            <div class="col-md-2">
+                <a routerLink="/users/edit/{{userData.uid}}" class="btn btn-primary">Edit</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 left-section">
+                <div class="row right-section-div">
+                    <div class="col-md-2">
+                        <img src="" alt="">
+                    </div>
+                    <div class="col-md-10">
+                        <span class="content-header ">
+                            {{userData.name}}
+                        </span>
+
+                        <p class="content-text"> {{userData.address}}, {{userData.addressDetail}}, {{userData.city}} , {{userData.country}}</p>
+                    </div>
+                </div>
+                <div class="row right-section-div" *ngIf="userData.note">
+                    <div class="col-md-12">
+                        <span class="content-header "> Note :</span>
+                        <p class="content-text">{{userData.note}}</p>
+                    </div>
+                </div>
+
+                <div class="row right-section-div">
+                    <div class="col-md-4">
+                        <span class="content-header "> Last Invoice</span>
+                        <p class="content-text">Default text for note</p>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="content-header "> Liftime Spent </span>
+                        <p class="content-text">Default text for note</p>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="content-header "> Average Invoice</span>
+                        <p class="content-text">Default text for note</p>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-md-4 right-section">
+               
+                <div class="right-section-div">
+                    <span class="content-header "> Contact </span> 
+                    <br>
+                    <br>
+                    <span class="email-id">  {{userData.email}} </span>
+                    <br>
+                    <span class="content-text">{{userData.code}} {{userData.phone}} </span>  
+                   
+                </div>
+                <hr>
+                <div class="right-section-div">
+                    <span class="content-header"> Customer ID </span> 
+                    <br>
+                    <br>
+                    <span class="content-text">  {{userData.companyRegNo}} </span>
+                    
+                    
+                </div>
+                <hr>
+                <div class="right-section-div">
+                    <span class="content-header"> Meter ID </span> 
+                    <br>
+                    <br>
+                    <div *ngFor="let meter of userData.meters"> 
+                        <span class="email-id">  {{meter.meterId}} </span>
+                        <br>
+                        <span class="content-text">{{meter.meterType}}</span>
+                        <br>
+                    </div>
+                     
+
+                </div>
+                <hr>
+                <div class="right-section-div">
+                    <span class="content-header"> Address </span> 
+                    <br>
+                    <br>
+                    <span class="content-text">  {{userData.address}}, {{userData.addressDetail}}, {{userData.city}} , {{userData.country}} </span>
+                    
+                    
+                </div>
+                <hr>
+                <div class="right-section-div">
+                    <span class="content-header"> Office phone number </span> 
+                    <br>
+                    <br>
+                    <span class="content-text"> {{userData.officePhone}}</span>
+                    
+                    
+                </div>
+            
+            </div>
+        </div>
+    </div>
+  </div>
+  

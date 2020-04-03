@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { ListUserComponent } from './list-user/list-user.component';
 import { AddUserComponent } from './add-user/add-user.component';
+import { UserDetailComponent } from './user-detail/user-detail.component';
 import { AuthGuard } from '../core/auth.guard';
 
 const routes: Routes = [
@@ -13,6 +14,14 @@ const routes: Routes = [
   {
     path: 'add',
     component : AddUserComponent ,canActivate: [AuthGuard]
+  },
+  {
+    path: 'edit/:id',
+    component : AddUserComponent ,canActivate: [AuthGuard]
+  },
+  {
+    path: 'user-detail/:id',
+    component : UserDetailComponent ,canActivate: [AuthGuard]
   }
 ];
 

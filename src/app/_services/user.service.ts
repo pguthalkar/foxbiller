@@ -67,9 +67,13 @@ export class UserService {
       });
   }
 
-  // updateUser(id: string, data: any) {
-  //   return this.getUser(id).update(data);
-  // }
+  updateUser(uid: string, content: any) {
+    const userRef: AngularFirestoreDocument<User> = this.afs.doc(
+      `users/${uid}`
+    );
+    content['uid'] = uid;
+    return userRef.set(content);
+  }
 
   // deleteNote(id: string) {
   //   return this.getUser(id).delete();

@@ -9,7 +9,7 @@
     </ol>
 
     <!-- <alert></alert>  -->
-    <form [formGroup]="userForm" autocomplete="off" novalidate (ngSubmit)="createOwner(userForm.value)"
+    <form [formGroup]="userForm" autocomplete="off" novalidate (ngSubmit)="createUser(userForm.value)"
     fxLayout="column wrap" fxLayoutAlign="center center" fxLayoutGap="10px">
         <mat-grid-list cols="4" rowHeight="950px">
         
@@ -149,7 +149,6 @@
                             
                             <mat-card >
                                 <div formArrayName="meters">
-                            
                                     <mat-card-content *ngFor="let meter of userForm.get('meters')['controls']; let i=index">
                                         <div fxLayout="column" [formGroupName]="i">
                                             <mat-form-field>
