@@ -27,13 +27,12 @@ import { ImportDataModule } from './import-data/import-data.module';
 import { UsersModule } from './users/users.module';
 // import { AlertComponent } from './_directives/alert.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-
+// import { AlertComponent } from './_directives/alert.component';
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     NavBarComponent
-    
   ],
   imports: [
     BrowserModule,

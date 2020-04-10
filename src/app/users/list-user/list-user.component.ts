@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from '../../_services/user.service';
+import { UserService, SharedService } from '../../_services/index';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource,MatSort} from '@angular/material';
 import { Observable } from 'rxjs';
@@ -23,10 +23,10 @@ export class ListUserComponent implements OnInit {
   // @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(private userService: UserService, private router: Router,) { }
+  constructor(private userService: UserService, private router: Router, private sharedService:SharedService) { }
   
   ngOnInit() {
-    this.loggedInUser = JSON.parse(localStorage.getItem('user'));
+    this.loggedInUser = JSON.parse(this.sharedService.getLocalStorage('user'));;
     let condn = {
       'key' : 'parent',
       'value' : this.loggedInUser.uid

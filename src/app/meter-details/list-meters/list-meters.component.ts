@@ -56,13 +56,14 @@ export class ListMetersComponent implements OnInit {
     // Subscribe to run the combined functions
     squareOdd.subscribe(x => console.log(x));
     const type: string = this.route.snapshot.paramMap.get('type');
-    this.loggedInUser = JSON.parse(localStorage.getItem('user'));
+    this.loggedInUser = JSON.parse(this.sharedService.getLocalStorage('user'));
     let condn = {
       'key': 'parent',
       'value': this.loggedInUser.uid
     }
     if (type) {
       this.meterService.getMeterDetailCondn({ 'key': 'type', 'value': type }).subscribe(meterData => {
+
         this.meters = meterData;
         this.dataSource = new MatTableDataSource<any>(this.meters);
         this.dataSource.paginator = this.paginator;
@@ -74,8 +75,9 @@ export class ListMetersComponent implements OnInit {
       let currentDate = new Date(date.getFullYear(), date.getMonth(), 1).getTime();
       this.meterService.getAllMeter().subscribe(meterData => {
 
-        let arrMeter = this.removeDuplicates(meterData, 'MeterSerialNumber');
-        this.meters = arrMeter.map(meter => {
+        meterData = this.aggregateMeterData(meterData);
+        // let arrMeter = this.removeDuplicates(meterData, 'MeterSerialNumber');
+        this.meters = meterData.map(meter => {
           if (meter['ReadingTimeTimestamp'] >= currentDate) {
             meter['status'] = 'read';
           }
@@ -101,6 +103,20 @@ export class ListMetersComponent implements OnInit {
     this.router.navigate(['/import']);
   }
 
+  aggregateMeterData(meterData) {
+    // let arrMeter = meterData.map( meter => {
+
+    // });
+    let arrMeter = {};
+    for (const meter of meterData) {
+      if(!arrMeter[meter.MeterSerialNumber]) {
+        arrMeter[meter.MeterSerialNumber] = meter;
+      }
+    }
+    // let keys = Object.values(arrMeter);
+    return Object.values(arrMeter);
+    // console.log(arrMeter);
+  }
 
 
 }

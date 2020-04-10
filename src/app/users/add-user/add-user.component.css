@@ -1,12 +1,7 @@
 mat-form-field{
-    width: 230px;
     padding: 10px;
     
 }
 mat-card-title{
     text-align: center;
-}
-.full-form-field {
-    display: block; 
-    width:462px; 
 }

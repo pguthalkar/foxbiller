@@ -14,10 +14,10 @@ export class SharedService {
   }
 
   setLocalStorage(key, value) {
-    this.localStorageData = localStorage.setItem(key,value);
+    this.localStorageData = sessionStorage.setItem(key,value);
   }
   getLocalStorage(key) {
-    this.localStorageData = localStorage.getItem(key);
+    this.localStorageData = sessionStorage.getItem(key);
     return this.localStorageData;
   }
 

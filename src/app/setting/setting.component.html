@@ -1,0 +1,403 @@
+<div class="container-fluid">
+  <!-- Breadcrumbs-->
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a routerLink="/meter">Setting</a>
+    </li>
+  </ol>
+
+  <div class="container">
+    <mat-horizontal-stepper #stepper>
+      <mat-step [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+          <div class="row">
+            <div class="col-md-4">
+              <span class="content-header">Company Details</span>
+              <p class="content-text">
+                FoxBiller and your customers will use this information to
+                contact you.
+              </p>
+            </div>
+            <div class="col-md-8">
+              <ng-template matStepLabel>Company Information</ng-template>
+              <mat-form-field class="full-form-field">
+                <mat-label>Owner Name</mat-label>
+                <input
+                  matInput
+                  placeholder="Last name, First name"
+                  formControlName="ownerName"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field class="full-form-field">
+                <mat-label>Account email</mat-label>
+                <input
+                  matInput
+                  placeholder="Email"
+                  formControlName="accountEmail"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field class="full-form-field">
+                <mat-label>Business name</mat-label>
+                <input
+                  matInput
+                  placeholder="Business Name"
+                  formControlName="businessName"
+                  required
+                />
+              </mat-form-field>
+              <mat-form-field class="full-form-field">
+                <mat-label>Phone</mat-label>
+                <input
+                  matInput
+                  placeholder="Phone"
+                  formControlName="phone"
+                  required
+                />
+              </mat-form-field>
+              <div class="row-form">
+                <mat-form-field>
+                  <mat-label>Street</mat-label>
+                  <input
+                    matInput
+                    placeholder="Street"
+                    formControlName="street"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Apt, Suit, etc (optional) </mat-label>
+                  <input
+                    matInput
+                    placeholder="Apt, Suit, etc"
+                    formControlName="address"
+                  />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>City</mat-label>
+                  <input
+                    matInput
+                    placeholder="city"
+                    formControlName="city"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Postal Code</mat-label>
+                  <input
+                    matInput
+                    placeholder="postalCode"
+                    formControlName="postalCode"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Country</mat-label>
+              
+                  <mat-select formControlName="country">
+                    <mat-option
+                      *ngFor="let country of arrCountries"
+                      [value]="country.name"
+                    >
+                      {{ country.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>State</mat-label>
+                  <input
+                    matInput
+                    placeholder="state"
+                    formControlName="state"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <span class="content-header">Bank Details</span>
+              <p class="content-text">
+                Bank iniformation for payment method to be specified in your
+                invoice format.
+              </p>
+            </div>
+
+            <div class="col-md-8">
+              <div class="row-form">
+                <mat-form-field>
+                  <mat-label>Business name with Bank</mat-label>
+                  <input
+                    matInput
+                    placeholder="bankBusinessName"
+                    formControlName="bankBusinessName"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Bank name </mat-label>
+                  <input
+                    matInput
+                    placeholder="bankName"
+                    formControlName="bankName"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Bank Account Number</mat-label>
+                  <input
+                    matInput
+                    placeholder="bankAccountNumber"
+                    formControlName="bankAccountNumber"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Payment Term</mat-label>
+                  <input
+                    matInput
+                    placeholder="paymentTerm"
+                    formControlName="paymentTerm"
+                  />
+                </mat-form-field>
+                <div>
+                  <button mat-button matStepperNext>Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="secondFormGroup">
+        <form [formGroup]="secondFormGroup">
+          <div class="row">
+            <div class="col-md-4">
+              <span class="content-header"
+                >Heat Tarriffs and Billing Standards</span
+              >
+              <p class="content-text">
+                Tarriff and Standard for calculating utility charges and fees to
+                your customers
+              </p>
+            </div>
+            <div class="col-md-8">
+              <ng-template matStepLabel>Billing Standards</ng-template>
+              <div class="row-form">
+                <mat-form-field>
+                  <mat-label>Tarriff 1 (Rate / KWH)</mat-label>
+                  <input matInput formControlName="heatTarriff1" required />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Tarriff 2 (Rate / KWH)</mat-label>
+                  <input matInput formControlName="heatTarriff2" required />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Tarriff 3 (Rate / KWH)</mat-label>
+                    <input matInput formControlName="heatTarriff3" required />
+                  </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Currency</mat-label>
+                  <mat-select formControlName="heatCurrency">
+                    <mat-option
+                      *ngFor="let currency of arrCurrencies"
+                      [value]="currency.code"
+                    >
+                      {{ currency.symbol }} {{ currency.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Time zone</mat-label>
+                  <mat-select formControlName="heatTimezone">
+                    <mat-option
+                      *ngFor="let timezone of arrTimezones"
+                      [value]="timezone.offset"
+                    >
+                      {{ timezone.offset }} {{ timezone.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Billing Cycle</mat-label>
+                  <input matInput formControlName="heatBillingCycle" />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Billing Date</mat-label>
+
+                  <input
+                    matInput
+                    [matDatepicker]="picker1"
+                    formControlName="heatBillingDate"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker1"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <span class="content-header"
+                >Electric Tarriffs and Billing Standards</span
+              >
+              <p class="content-text">
+                Tarriff and Standard for calculating utility charges and fees to
+                your customers
+              </p>
+            </div>
+            <div class="col-md-8">
+              <ng-template matStepLabel>Billing Standards</ng-template>
+              <div class="row-form">
+                <mat-form-field>
+                  <mat-label>Tarriff 1 (Rate / KWH)</mat-label>
+                  <input matInput formControlName="electricTarriff1" required />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Tarriff 2 (Rate / KWH)</mat-label>
+                  <input matInput formControlName="electricTarriff2" required />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Currency</mat-label>
+                  <mat-select formControlName="electricCurrency">
+                    <mat-option
+                      *ngFor="let currency of arrCurrencies"
+                      [value]="currency.code"
+                    >
+                      {{ currency.symbol }} {{ currency.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Time zone</mat-label>
+                  <mat-select formControlName="electricTimezone">
+                    <mat-option
+                      *ngFor="let timezone of arrTimezones"
+                      [value]="timezone.offset"
+                    >
+                      {{ timezone.offset }} {{ timezone.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Billing Cycle</mat-label>
+                  <input matInput formControlName="electricBillingCycle" />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Billing Date</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="picker2"
+                    formControlName="electricBillingDate"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker2"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <span class="content-header"
+                >Water Tarriffs and Billing Standards</span
+              >
+              <p class="content-text">
+                Tarriff and Standard for calculating utility charges and fees to
+                your customers
+              </p>
+            </div>
+            <div class="col-md-8">
+              <ng-template matStepLabel>Billing Standards</ng-template>
+              <div class="row-form">
+                <mat-form-field>
+                  <mat-label>Tarriff 1 (Rate / KWH)</mat-label>
+                  <input matInput formControlName="waterTarriff1" required />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Tarriff 2 (Rate / KWH)</mat-label>
+                  <input matInput formControlName="waterTarriff2" required />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Tarriff 3 (Rate / KWH)</mat-label>
+                    <input matInput formControlName="waterTarriff3" required />
+                  </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Currency</mat-label>
+
+                  <mat-select formControlName="waterCurrency">
+                    <mat-option
+                      *ngFor="let currency of arrCurrencies"
+                      [value]="currency.code"
+                    >
+                      {{ currency.symbol }} {{ currency.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Time zone</mat-label>
+                  <mat-select formControlName="waterTimezone">
+                    <mat-option
+                      *ngFor="let timezone of arrTimezones"
+                      [value]="timezone.offset"
+                    >
+                      {{ timezone.offset }} {{ timezone.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Billing Cycle</mat-label>
+                  <input matInput formControlName="waterBillingCycle" />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Billing Date</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="picker3"
+                    formControlName="waterBillingDate"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker3"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #picker3></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Done</ng-template>
+        <span
+          class="error"
+          *ngIf="!firstFormGroup.valid || !secondFormGroup.valid"
+          >* marked fields are required.</span
+        >
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button
+            mat-button
+            (click)="createSetting()"
+            [disabled]="!firstFormGroup.valid || !secondFormGroup.valid"
+          >
+            Submit
+					</button>
+					<alert></alert> 
+        </div>
+      </mat-step>
+    </mat-horizontal-stepper>
+  </div>
+</div>

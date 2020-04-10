@@ -44,8 +44,6 @@ export class AuthService {
           return of(null);
         }
       })
-      // tap(user => localStorage.setItem('user', JSON.stringify(user))),
-      // startWith(JSON.parse(localStorage.getItem('user')))
     );
   }
 
@@ -146,6 +144,16 @@ export class AuthService {
     const userRef: AngularFirestoreDocument<User> = this.afs.doc(
       `users/${user.uid}`
     );
+
+    const settingRef: AngularFirestoreDocument<User> = this.afs.doc(
+      `settings/${user.uid}`
+    );
+    settingRef.valueChanges().subscribe( settingData => {
+      // console.log(settingData);
+      this.sharedService.setLocalStorage('settingData',JSON.stringify(settingData));
+    });
+
+    
     let condn = {
       'key' : 'uid',
       'value' : user.uid

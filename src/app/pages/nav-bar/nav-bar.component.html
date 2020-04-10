@@ -33,7 +33,7 @@
     </a>
   </li>
 
-  <li class="nav-item " [class.active]="meterlink.classList.contains('active')">
+  <li class="nav-item " [class.active]="meterlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
     <a
       class="nav-link"
       #meterlink
@@ -45,7 +45,7 @@
     </a>
   </li>
 
-  <li class="nav-item " [class.active]="heatmeterlink.classList.contains('active')">
+  <li class="nav-item " [class.active]="heatmeterlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
     <a
       class="nav-link"
       #heatmeterlink
@@ -56,7 +56,7 @@
       <span>Heat Meter</span>
     </a>
   </li>
-  <li class="nav-item " [class.active]="watermeterlink.classList.contains('active')">
+  <li class="nav-item " [class.active]="watermeterlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
     <a
       class="nav-link"
       #watermeterlink
@@ -67,7 +67,7 @@
       <span>Water Meter</span>
     </a>
   </li>
-  <li class="nav-item " [class.active]="electicitymeterlink.classList.contains('active')">
+  <li class="nav-item " [class.active]="electicitymeterlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
     <a
       class="nav-link"
       #electicitymeterlink
@@ -76,6 +76,18 @@
     >
       <i class="fa fa-square"></i>
       <span>Electricity Meter</span>
+    </a>
+  </li>
+
+  <li class="nav-item " [class.active]="settinglink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
+    <a
+      class="nav-link"
+      #settinglink
+      routerLink="/setting"
+      routerLinkActive="active"
+    >
+      <i class="fa fa-cog"></i>
+      <span>Setting</span>
     </a>
   </li>
   <!-- <li class="nav-item dropdown">

@@ -132,7 +132,11 @@ export class ImportComponent implements OnInit {
     }
   ];
   inactiveCustomers = [];
+  loggedInUser;
+  settingData;
   ngOnInit() {
+    this.loggedInUser = JSON.parse(this.sharedService.getLocalStorage('user'));
+    this.settingData = this.sharedService.getLocalStorage('settingData') ? JSON.parse(this.sharedService.getLocalStorage('settingData')) : null;
   }
   title = 'app';
   public csvRecords: any[] = [];
@@ -258,6 +262,10 @@ export class ImportComponent implements OnInit {
   // }
 
   async importData() {
+    if(!this.settingData) {
+      this.alertService.error("Please update Setting data.");
+      return;
+    }
     let currentDay = new Date().getDate();
     // if(currentDay <= 26) {
     //   this.alertService.error("You can import data only after 26th Date of each month");
@@ -295,16 +303,16 @@ export class ImportComponent implements OnInit {
       let lastmonthDate = new Date(this.inputData[0].ReadingTime);
       lastmonthDate.setMonth(lastmonthDate.getMonth() - 1);
       let inputDate = new Date(this.inputData[0].ReadingTime);
-      let inputMonth = inputDate.getMonth();
+      let inputMonth = inputDate.getMonth() ;
       this.userService.getMeterDetails(lastmonthDate.getTime()).subscribe(resData => {
         let currentMonthData = resData.find(data => {
           if (new Date(data['ReadingTime']).getMonth() == inputMonth) {
-            return false;
+            return true;
           }
           if ( this.dateDiffIndays(new Date(data['ReadingTime']),inputDate) < 25 ) {
-            return false;
+            return true;
           }
-          return true;
+          return false;
         });
 
 
@@ -425,23 +433,23 @@ export class ImportComponent implements OnInit {
       let waterCharges = 0;
       let heatCharges = 0;
       if (electicityUsage <= this.limitUsage) {
-        charges = electicityUsage * this.tariffA;
+        charges = electicityUsage * this.settingData.electricTarriff1;
       }
       if (electicityUsage >= this.limitUsage) {
-        charges = (this.limitUsage * this.tariffA) + (electicityUsage - this.limitUsage) * this.tariffB;
+        charges = (this.limitUsage * this.settingData.electricTarriff1) + (electicityUsage - this.limitUsage) * this.settingData.electricTarriff2;
       }
 
 
       //water bill calculation
       let waterUsage = billdata.VolumeWater - selectedMeterData['VolumeWater'];
       if (waterUsage > 0 && waterUsage <= this.waterMaxBand1) {
-        waterCharges = waterUsage * this.waterTariff1;
+        waterCharges = waterUsage * this.settingData.waterTarriff1;
       }
       if (waterUsage > this.waterMaxBand1 && waterUsage <= this.waterMaxBand2) {
-        waterCharges = (this.waterMaxBand1 * this.waterTariff1) + ((waterUsage - this.waterMaxBand1) * this.waterTariff2);
+        waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((waterUsage - this.waterMaxBand1) * this.settingData.waterTariff2);
       }
       if (waterUsage > this.waterMaxBand2) {
-        waterCharges = (this.waterMaxBand1 * this.waterTariff1) + ((this.waterMaxBand2 - this.waterMaxBand1) * this.waterTariff2) + ((waterUsage - this.waterMaxBand2) * this.waterTariff3);
+        waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((this.waterMaxBand2 - this.waterMaxBand1) * this.settingData.waterTariff2) + ((waterUsage - this.waterMaxBand2) * this.settingData.waterTariff3);
       }
       if (waterCharges < this.minWaterBill) {
         waterCharges = this.minWaterBill;
@@ -451,13 +459,13 @@ export class ImportComponent implements OnInit {
       //heat bill calculation
       let heatUsage = billdata.CoolingEnergy - selectedMeterData['CoolingEnergy'];
       if (heatUsage > 0 && heatUsage <= this.heatMaxBand1) {
-        heatCharges = heatUsage * this.heatTariff1;
+        heatCharges = heatUsage * this.settingData.heatTariff1;
       }
       if (heatUsage > this.heatMaxBand1 && heatUsage <= this.heatMaxBand2) {
-        heatCharges = (this.heatMaxBand1 * this.heatTariff1) + ((heatUsage - this.heatMaxBand1) * this.heatTariff2);
+        heatCharges = (this.heatMaxBand1 * this.settingData.heatTariff1) + ((heatUsage - this.heatMaxBand1) * this.settingData.heatTariff2);
       }
       if (heatUsage > this.heatMaxBand2) {
-        heatCharges = (this.heatMaxBand1 * this.heatTariff1) + ((this.heatMaxBand2 - this.heatMaxBand1) * this.heatTariff2) + (heatUsage * this.heatTariff3);
+        heatCharges = (this.heatMaxBand1 * this.settingData.heatTariff1) + ((this.heatMaxBand2 - this.heatMaxBand1) * this.settingData.heatTariff2) + (heatUsage * this.settingData.heatTariff3);
       }
       if (heatCharges < this.minHeatBill) {
         heatCharges = this.minHeatBill;

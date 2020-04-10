@@ -4,3 +4,59 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.left-section {
+    padding: 32px;
+    outline: solid rgb(198, 200, 203) 1px;
+    outline-offset: -9px;
+
+}
+.right-section {
+ 
+    padding: 32px;
+    outline: solid rgb(198, 200, 203) 1px;
+    outline-offset: -9px;
+
+}
+.email-id {
+    color: #0069D9;
+    font-size: 15px;
+    font-weight: 500;
+}
+.content-text {
+    color: #6C757D;
+    font-size: 15px;
+    font-weight: 500;
+}
+.content-header {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+.right-section-div {
+    margin-bottom: 38px
+}
+.right-section-div span {
+    float: left;
+    width: 100%;
+}
+.header-title {
+    font-size: 28px;
+    font-weight: 600;
+    padding: 5px
+}
+
+.full-form-field {
+    display: block; 
+    width:100%; 
+}
+.row-form mat-form-field{
+    width: 50%;
+    
+}
+.nav-item >  a > i  {
+    padding-right: 7px;
+}
+.error {
+    color: red;
+}
