@@ -20,7 +20,7 @@ export class MeterDetailComponent implements OnInit {
       'key': '_id',
       'value': meterId
     }
-    this.meterService.getMeterDetailCondn(condn).subscribe(meterData => {
+    this.meterService.getMeterDetailCondn1(condn).subscribe(meterData => {
 
       this.meterData = meterData ? meterData[0] : {};
       //  this.meterData = this.allMeterData.filter( element => {

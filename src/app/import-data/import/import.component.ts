@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 // import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
-import { AlertService, FirebaseService, SharedService } from '../../_services/index';
+import { AlertService, FirebaseService, SharedService, MeterService } from '../../_services/index';
 import { UserService } from '../../_services/index';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';  // RxJS 6 syntax
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-import',
@@ -17,7 +18,9 @@ export class ImportComponent implements OnInit {
   constructor(private alertService: AlertService,
     private firebaseService: FirebaseService,
     private userService: UserService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private meterService: MeterService,
+    private router: Router
   ) {
 
     this.userData = this.sharedService.getLocalStorage('user') ? JSON.parse(this.sharedService.getLocalStorage('user')) : {};
@@ -25,6 +28,7 @@ export class ImportComponent implements OnInit {
   userData = {};
   csvFields = [
   ];
+  isImported = false;
   inputData = [];
   arrBillsRequests = [];
   flag = false;
@@ -78,7 +82,7 @@ export class ImportComponent implements OnInit {
     },
     {
       'name': 'ElectricityEnergy',
-      'required': true,
+      'required': false,
       'mapped': ['Energy Electricity energy']
     }, {
       'name': 'EUnit',
@@ -134,6 +138,7 @@ export class ImportComponent implements OnInit {
   inactiveCustomers = [];
   loggedInUser;
   settingData;
+  fileName;
   ngOnInit() {
     this.loggedInUser = JSON.parse(this.sharedService.getLocalStorage('user'));
     this.settingData = this.sharedService.getLocalStorage('settingData') ? JSON.parse(this.sharedService.getLocalStorage('settingData')) : null;
@@ -150,7 +155,7 @@ export class ImportComponent implements OnInit {
     });
     let text = [];
     let files = $event.srcElement.files;
-
+    this.fileName = files[0].name;
     if (this.isCSVFile(files[0])) {
 
       let input = $event.target;
@@ -262,18 +267,12 @@ export class ImportComponent implements OnInit {
   // }
 
   async importData() {
-    if(!this.settingData) {
+    if (!this.settingData) {
       this.alertService.error("Please update Setting data.");
       return;
     }
     let currentDay = new Date().getDate();
-    // if(currentDay <= 26) {
-    //   this.alertService.error("You can import data only after 26th Date of each month");
-    //       return false;
-    // } 
-    // console.log(this.userData);
 
-    // let inputData = [];
     let isError = false;
     for (let index = 0; index < this.availableFields.length; index++) {
 
@@ -303,13 +302,18 @@ export class ImportComponent implements OnInit {
       let lastmonthDate = new Date(this.inputData[0].ReadingTime);
       lastmonthDate.setMonth(lastmonthDate.getMonth() - 1);
       let inputDate = new Date(this.inputData[0].ReadingTime);
-      let inputMonth = inputDate.getMonth() ;
-      this.userService.getMeterDetails(lastmonthDate.getTime()).subscribe(resData => {
+      let inputMonth = inputDate.getMonth();
+      this.userService.getMeterDetails(lastmonthDate.getTime(), 
+      this.userData['uid']).subscribe(resData => {
+        if (this.isImported) {
+          return false;
+        }
+        this.isImported = true;
         let currentMonthData = resData.find(data => {
           if (new Date(data['ReadingTime']).getMonth() == inputMonth) {
             return true;
           }
-          if ( this.dateDiffIndays(new Date(data['ReadingTime']),inputDate) < 25 ) {
+          if (this.sharedService.dateDiffIndays(new Date(data['ReadingTime']), inputDate) < 25) {
             return true;
           }
           return false;
@@ -320,110 +324,109 @@ export class ImportComponent implements OnInit {
           console.log('data is already there');
           this.alertService.error("Cannot import this data for this month.");
           return false;
-        }
-        // console.log(resData);
-        var batch = this.firebaseService.getBatch();
-        if (resData && resData.length > 0) {
+        } else {
+          var batch = this.firebaseService.getBatch();
+          if (resData && resData.length > 0) {
 
-          let arrBilldata = {};
-          let resBillData = [];
-          resData.forEach(billdata => {
-            arrBilldata[billdata['CustomerNumber']] = billdata;
-          })
-          this.inputData.forEach(inputBillData => {
-            resBillData.push(this.calculateBill(inputBillData, arrBilldata[inputBillData.CustomerNumber]));
-          });
+            let arrBilldata = {};
+            let resBillData = [];
+            resData.forEach(billdata => {
+              arrBilldata[billdata['CustomerNumber']] = billdata;
+            })
+            this.inputData.forEach(inputBillData => {
+              resBillData.push(this.calculateBill(inputBillData, arrBilldata[inputBillData.CustomerNumber]));
+            });
 
-          resBillData.forEach(async (billdata, index) => {
-            let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
-            let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
-            let ref = meterDetailsCollection.doc(docId);
+            resBillData.forEach(async (billdata, index) => {
+              let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
+              let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
+              let ref = meterDetailsCollection.doc(docId);
 
-            billdata['ReadingTimeTimestamp'] = readingTime;
-            billdata['uid'] = this.userData['uid'];
-            billdata['_id'] = docId;
-            switch (billdata['MeterType']) {
-              case 'MULTICAL 602':
-                billdata['type'] = 'heat';
-                break;
-              case 'MULTICAL 62':
-                billdata['type'] = 'water';
-                break;
-              case 'OMNIPOWER':
-                billdata['type'] = 'electricity';
-                break;
-            }
+              billdata['ReadingTimeTimestamp'] = readingTime;
+              billdata['uid'] = this.userData['uid'];
+              billdata['_id'] = docId;
 
-            batch.set(ref, billdata);
-          });
-          batch.commit().then(resData => {
-            console.log(resData);
-            this.fileReset();
-            this.alertService.success("Successfully Imported");
+              billdata['type'] = this.sharedService.getMeterType(billdata['MeterType']);
 
-          }).catch(err => {
-            console.log(err);
-          });
+              batch.set(ref, billdata);
+            });
+            batch.commit().then(resData => {
+              console.log(resData);
+              this.fileReset();
+              this.createImportHistory(resBillData);
+              this.alertService.success("Successfully Imported");
+
+              this.router.navigate(['/import/list']);
+            }).catch(err => {
+              console.log(err);
+            });
 
 
-        }
-        else {
-          this.inputData.forEach(async (billdata, index) => {
-            // let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
-            // let ref = meterDetailsCollection.doc(`${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`);
+          }
+          else {
+            //imported first time
+            this.inputData.forEach(async (billdata, index) => {
 
-            // billdata['ReadingTimeTimestamp'] = readingTime;
+              let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
+              let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
+              let ref = meterDetailsCollection.doc(docId);
 
-            let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
-            let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
-            let ref = meterDetailsCollection.doc(docId);
+              billdata['ReadingTimeTimestamp'] = readingTime;
+              billdata['uid'] = this.userData['uid'];
+              billdata['_id'] = docId;
+              switch (billdata['MeterType']) {
+                case 'MULTICAL 602':
+                  billdata['type'] = 'heat';
+                  break;
+                case 'MULTICAL 62':
+                  billdata['type'] = 'water';
+                  break;
+                case 'OMNIPOWER':
+                  billdata['type'] = 'electricity';
+                  break;
+              }
+              batch.set(ref, billdata);
+            });
+            batch.commit().then(resData => {
+              // console.log(resData);
+              this.fileReset();
+              this.alertService.success("Successfully Imported");
+              this.createImportHistory(this.inputData);
 
-            billdata['ReadingTimeTimestamp'] = readingTime;
-            billdata['uid'] = this.userData['uid'];
-            billdata['_id'] = docId;
-            switch (billdata['MeterType']) {
-              case 'MULTICAL 602':
-                billdata['type'] = 'heat';
-                break;
-              case 'MULTICAL 62':
-                billdata['type'] = 'water';
-                break;
-              case 'OMNIPOWER':
-                billdata['type'] = 'electricity';
-                break;
-            }
-            batch.set(ref, billdata);
-          });
-          batch.commit().then(resData => {
-            // console.log(resData);
-            this.fileReset();
-            this.alertService.success("Successfully Imported");
+              this.router.navigate(['/import/list']);
 
-          }).catch(err => {
-            console.log(err);
-          });
+            }).catch(err => {
+              console.log(err);
+            });
+          }
         }
 
       });
 
-
-
-
-
-      // this.userService.getMeterDetails(condn);
-
-      // forkJoin(this.arrBillsRequests).subscribe(responseList => {
-      //   console.log(responseList);
-      // });
-
     }
   }
 
-  dateDiffIndays(date1, date2) {
-    let dt1 = new Date(date1);
-    let dt2 = new Date(date2);
-    return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
+  createImportHistory(resBillData) {
+    let arrUserId =  resBillData.map( el => el.CustomerNumber);
+    this.userService.getMultipleUser(arrUserId).subscribe(resUser => {
+
+    
+      let billData = resBillData[0];
+      let readingTime = new Date(billData.ReadingTime.toString()).getTime();
+      let docId = `${billData.CustomerNumber + `-` + billData.MeterSerialNumber + `-` + readingTime}`;
+      let importHistoryData = {
+        _id: docId,
+        importedDate: billData.ReadingTime,
+        importedData: resBillData.length,
+        importedFile: this.fileName,
+        dateCreated: new Date(),
+        uid: this.userData['uid']
+      }
+      this.meterService.createImportHistory(importHistoryData);
+    });
   }
+
+
   calculateBill(billdata, selectedMeterData) {
 
     if (selectedMeterData && billdata['ReadingTime'] != selectedMeterData['ReadingTime']) {
@@ -476,6 +479,9 @@ export class ImportComponent implements OnInit {
       billdata['electricityCharges'] = charges;
       billdata['waterCharges'] = waterCharges;
       billdata['HeatCharges'] = heatCharges;
+      billdata['lastElectricityEnergy'] = selectedMeterData['ElectricityEnergy'] || 0;
+      billdata['lastVolumeWater'] = selectedMeterData['VolumeWater'] || 0;
+      billdata['lastCoolingEnergy'] = selectedMeterData['CoolingEnergy'] || 0;
 
     }
     return billdata;

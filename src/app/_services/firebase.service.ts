@@ -16,6 +16,10 @@ export class FirebaseService {
     return this.db.firestore.collection('meterDetails');
   }
 
+  getInvoiceCollection() {
+    return this.db.firestore.collection('invoices');
+  }
+
   getBatch() {
     return this.db.firestore.batch();
   }

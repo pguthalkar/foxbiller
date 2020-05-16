@@ -5,23 +5,33 @@ import { ImportDataRoutingModule } from './import-data-routing.module';
 import { ImportComponent } from './import/import.component';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import {MatButtonModule} from '@angular/material/button';
+import { MatTableModule,MatCheckboxModule, MatSortModule,MatGridListModule, MatFormFieldModule, MatSelectModule, MatInputModule,  MatDatepickerModule, MatNativeDateModule, MatCardModule,MatButtonModule,MatPaginatorModule,MatChipsModule,MatListModule,MatDividerModule } from '@angular/material';
 
 import { AlertModule } from '../_directives/alert.module';
-import { AlertService } from '../_services/index';
+import { MeterService } from '../_services/index';
+import { ListComponent } from './list/list.component';
 
 @NgModule({
-  declarations: [ImportComponent],
+  declarations: [ImportComponent, ListComponent],
   imports: [
     CommonModule,
     ImportDataRoutingModule,
     DragDropModule,
     MatButtonModule,
-    AlertModule
+    AlertModule,
+    MatFormFieldModule,
+    MatTableModule,
+    MatSortModule,
+    MatGridListModule,
+    MatSelectModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatPaginatorModule,
+    MatListModule
     
   ],
   providers: [
-    // AlertService
+    MeterService
 ],
 })
 export class ImportDataModule { }

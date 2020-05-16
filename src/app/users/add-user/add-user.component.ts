@@ -44,7 +44,7 @@ export class AddUserComponent implements OnInit {
       name : 'Electricity'
     },
     {
-      name : 'Cool'
+      name : 'Water'
     }
   ]
   userData;
@@ -78,7 +78,8 @@ export class AddUserComponent implements OnInit {
         // meterType: new FormControl('', [Validators.required]),
         phone: new FormControl('', [Validators.required, Validators.maxLength(10)]),
         companyRegNo: new FormControl('', [Validators.required]),
-        note: new FormControl('', [Validators.required]),
+        note: new FormControl(''),
+        customerNumber: new FormControl('', [Validators.required]),
         meters: this._fb.array([this.initMeter()])
       });
       
@@ -103,7 +104,8 @@ export class AddUserComponent implements OnInit {
         // meterType: new FormControl('', [Validators.required]),
         phone: new FormControl('', [Validators.required, Validators.maxLength(10)]),
         companyRegNo: new FormControl('', [Validators.required]),
-        note: new FormControl('', [Validators.required]),
+        note: new FormControl(''),
+        customerNumber: new FormControl('', [Validators.required]),
         meters: this._fb.array([
           this.initMeter(),
         ])
@@ -158,13 +160,13 @@ export class AddUserComponent implements OnInit {
     const control = <FormArray>this.userForm.controls['meters'];
     switch(control.length) {
       case 2 : 
-        this.meterSectionHeight = 320;
+        this.meterSectionHeight = 370;
         break;
       case 3 :
-        this.meterSectionHeight = 390;
+        this.meterSectionHeight = 440;
         break;
       default :
-        this.meterSectionHeight = 250;
+        this.meterSectionHeight = 300;
     }
     if(control.length < 3) {
       control.push(this.initMeter());
@@ -211,13 +213,17 @@ export class AddUserComponent implements OnInit {
     if(meter) {
       return this._fb.group({
         meterId: [meter['meterId']],
-        meterType: [meter['meterType']]
+        meterType: [meter['meterType']],
+        firstMeterReading: [meter['firstMeterReading']],
+        firstMeterReadingDate: [meter['firstMeterReadingDate']],
     });
     }
     else {
       return this._fb.group({
           meterId: [''],
-          meterType: ['']
+          meterType: [''],
+          firstMeterReading: [''],
+          firstMeterReadingDate: [''],
       });
     }
   }
@@ -241,7 +247,8 @@ export class AddUserComponent implements OnInit {
       this.userForm.controls['addressDetail'].setValue(this.userData.addressDetail);
       this.userForm.controls['phone'].setValue(this.userData.phone);
       this.userForm.controls['note'].setValue(this.userData.note);
-      this.userForm.controls['city'].setValue(this.userData.city);
+      this.userForm.controls['note'].setValue(this.userData.note);
+      this.userForm.controls['customerNumber'].setValue(this.userData.customerNumber);
       this.userForm.controls['country'].setValue(this.userData.country);
       this.userForm.controls['state'].setValue(this.userData.state);
       this.userForm.controls['postalCode'].setValue(this.userData.postalCode);
@@ -255,13 +262,13 @@ export class AddUserComponent implements OnInit {
 
       switch(control.length) {
         case 2 : 
-          this.meterSectionHeight = 320;
+          this.meterSectionHeight = 370;
           break;
         case 3 :
-          this.meterSectionHeight = 390;
+          this.meterSectionHeight = 440;
           break;
         default :
-          this.meterSectionHeight = 250;
+          this.meterSectionHeight = 300;
       }
       if(control.length >= 3) { 
         this.isAddMeterButton = false;

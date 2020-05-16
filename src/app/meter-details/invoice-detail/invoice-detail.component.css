@@ -1,0 +1,25 @@
+.letter-section {
+    margin-bottom: 20px;
+}
+.letter-content-header {
+    font-size: 16px;
+    font-weight: 600;
+}
+th {
+    text-align: center;
+    
+    font-weight: 500;
+}
+
+.total-amount-section {
+    padding: 10px;
+    border-top: solid #b9b9b9 1px;
+    margin-top: 20px;
+}
+.letter-content-text{
+    color: #6C757D;
+    font-size: 15px;
+    font-weight: 500;
+    float: left;
+    width: 100%;
+}

@@ -1,0 +1,129 @@
+<div class="container-fluid" >
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a routerLink="/meter/invoices">Invoices </a>
+        </li>
+        <li class="breadcrumb-item active">Overview</li>
+    </ol>
+  
+            <button class="btn btn-primary float-right"  (click)= "createPdf()">Print</button>
+     
+    <div class="container" #content *ngIf="invoiceData && invoiceData.userData">
+        <div class="row ">
+            <div class="col-md-10">
+                <span class="header-title">{{invoiceData.invoiceId}}</span>
+            </div>
+            
+        </div>
+        <div class="row letter-section" >
+            <div class="col-md-9 ">
+                <!-- <img src="https://picsum.photos/id/237/50/50" alt="image" /> -->
+            </div>
+            <div class="col-md-3">
+                <div class="right-section-div">
+                    <span class="content-text"> Your company </span>
+                    <span class="content-text"> Co No. 7737330 </span>
+                    <span class="content-text"> 1331 Hart Ridge Road </span>
+                    <span class="content-text"> 48436 Gaines, MI </span>
+                    <br />
+                    <br />
+                    <span class="content-text"> abc@gmail.com </span>
+                    <span class="content-text"> +386 989 271 3115 </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row letter-section">
+            <div class="col-md-9 right-section-div">
+                <span class=" letter-content-header"> {{ invoiceData.customerName}}</span>
+                <br />
+                <span class="content-text"> {{invoiceData.userData.addressDetail}} </span>
+                <span class="content-text"> {{invoiceData.userData.address}} </span>
+                <span class="content-text"> {{invoiceData.userData.city}} </span>
+
+                <span class="content-text">  {{invoiceData.userData.email}} </span>
+                <span class="content-text"> {{invoiceData.userData.code}}  {{invoiceData.userData.officePhone}} </span>
+            </div>
+            <div class="col-md-3">
+                <div class="right-section-div">
+                    <h4>Invoice</h4>
+
+                    <span class="letter-content-header "> Invoice No </span>
+                    <span class="content-text">  {{invoiceData.invoiceId}} </span>
+                    <br />
+                    <span class="letter-content-header "> Invoice Date </span>
+                    <span class="content-text"> {{invoiceData.invoiceDate | date }} </span>
+                    <br />
+                    <span class="letter-content-header ">Billing Period </span>
+                    <span class="content-text"> {{invoiceData.lastBillDate | date}} - {{invoiceData.currentBilldate | date}} </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row letter-section">
+            <div class="col-md-12 ">
+                <table class="table table-bordered">
+                    <thead>
+                        <!-- <tr>
+                                <th scope="col" rowspan="2">Meter Id</th>
+                                <th scope="col"  colspan="3">First</th>
+                            
+                                <th scope="col">Handle</th>
+                                <th scope="col">Handle</th>
+                              </tr> -->
+                        <tr>
+                            <th rowspan="2">Meter Id</th>
+                            <th colspan="3">Readings</th>
+                            <th scope="col" rowspan="2">Rate</th>
+                            <th scope="col" rowspan="2">Amount</th>
+                        </tr>
+                        <tr>
+                            <th>This Month</th>
+                            <th>Last Month</th>
+                            <th>Consumption</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">{{invoiceData.invoiceId}} {{invoiceData.MeterType}}</th>
+                            <td>{{invoiceData.lastReading}}</td>
+                            <td>{{invoiceData.currentReading}}</td>
+                            <td>{{invoiceData.currentReading - invoiceData.lastReading}}</td>
+          
+                         
+                            <td>2.00 / KWH </td>
+                            <td>{{invoiceData.totalAmount}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <span
+                    class="letter-content-header float-right total-amount-section"
+                >
+                    Total :
+                    <span style="color: blue"> MYR {{invoiceData.totalAmount}}</span>
+                </span>
+            </div>
+        </div>
+        <div class="row letter-section">
+            <div class="col-md-12 ">
+                <h6>PAYMENT METHOD</h6>
+                <span class="letter-content-text"> ALL Cheque and Bank Transfer please pay to: </span>
+                <span class="letter-content-text"> Name: You compnay name Sdn Bhd </span>
+                <span class="letter-content-text"> Bank : CIMB </span>
+                <span class="letter-content-text"> Account Number: 3330 778 778 </span>
+            </div>
+        </div>
+        <div class="row letter-section">
+            <div class="col-md-12 ">
+                <h6>NOTES</h6>
+                <p class="content-text">
+                    All amounts are in MYR. Please make the payment within 15
+                    days from the issue of date of this invoice. We reserve the
+                    rights to charge the interest of 3% per month from the
+                    outstanding balance after 15 days
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

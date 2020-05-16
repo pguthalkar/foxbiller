@@ -8,8 +8,8 @@
 
   <!-- <alert></alert>  -->
 
-  <div fxLayout="row" >
-     
+  <div fxLayout="row">
+      <alert></alert> 
     <button
       mat-raised-button
       color="primary"
@@ -28,24 +28,48 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Bulk action</mat-label>
-      <select matNativeControl required>
-        <option value="email">Bill selected with email</option>
+      <select matNativeControl required (change)="bulkAction($event)">
+        <option value="">Select action</option>
+        <option value="invoice">Invoice selected meter</option>
         <option value="print">Bill selected with print</option>
       </select>
     </mat-form-field>
     <hr />
     <div class="example-container mat-elevation-z8">
-      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        matSort
+        class="mat-elevation-z8"
+      >
         <!--- Note that these columns can be defined in any order.
                     The actual rendered columns are set as a property on the row definition" -->
         <ng-container matColumnDef="Select">
-          <th mat-header-cell *matHeaderCellDef><mat-checkbox></mat-checkbox></th>
-          <td mat-cell *matCellDef="let element"><mat-checkbox></mat-checkbox></td>
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox
+              (change)="$event ? masterToggle() : null"
+              [checked]=" selection.hasValue() && isAllSelected()"
+              [indeterminate]="selection.hasValue() && !isAllSelected() "
+              [aria-label]="checkboxLabel()"
+            >
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="$event  ? selection.toggle(element) : null"
+              [checked]="selection.isSelected(element)"
+              [aria-label]="checkboxLabel(element)"
+            >
+            </mat-checkbox>
+          </td>
         </ng-container>
 
         <!-- Position Column -->
         <ng-container matColumnDef="MeterSerialNumber">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Meter number</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Meter number
+          </th>
           <td mat-cell *matCellDef="let element">
             <a [routerLink]="['/meter/detail', element._id]"
               >{{ element.MeterSerialNumber }}
@@ -55,31 +79,54 @@
 
         <!-- Name Column -->
         <ng-container matColumnDef="ReadingTime">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Reading time</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Last Reading time
+          </th>
           <td mat-cell *matCellDef="let element">{{ element.ReadingTime }}</td>
         </ng-container>
 
-        <!-- Weight Column -->
-        <ng-container matColumnDef="CustomerName" >
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer Name</th>
+        <ng-container matColumnDef="CustomerName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Customer Name
+          </th>
           <td mat-cell *matCellDef="let element">{{ element.CustomerName }}</td>
         </ng-container>
 
-        <!-- Weight Column -->
         <ng-container matColumnDef="type">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Meter Type</th>
           <td mat-cell *matCellDef="let element">{{ element.type }}</td>
         </ng-container>
 
-        <!-- Weight Column -->
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Meter status</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Meter status
+          </th>
           <td mat-cell *matCellDef="let element">{{ element.status }}</td>
         </ng-container>
-        <!-- Weight Column -->
+
         <ng-container matColumnDef="meterCondition">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Meter Condition</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Meter Condition
+          </th>
           <td mat-cell *matCellDef="let element">OK</td>
+        </ng-container>
+        <!-- invoice -->
+        <ng-container matColumnDef="invoice">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Invoice Created
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <span *ngIf="element.isInvoice ; else other_content">Yes </span>
+              <ng-template #other_content>No</ng-template>
+            </td>
+          </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+          <td mat-cell *matCellDef="let element">
+
+            <button  (click)="createInvoice(element)">Invoice</button>
+           
+          </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

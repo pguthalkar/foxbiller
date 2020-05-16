@@ -20,14 +20,11 @@ export class UserService {
     private afs: AngularFirestore,
   ) {
     this.usersCollection = this.firestore.collection('users');
-    // this.arrUsers = this.firestore.collection('meterDetails').snapshotChanges();
   }
 
 
 
   getAllUser() {
-    // ['added', 'modified', 'removed']
-    // return this.usersCollection.snapshotChanges();
     return this.firestore.collection('users').valueChanges();
   }
 
@@ -36,21 +33,15 @@ export class UserService {
 
   }
 
-  getMeterDetails(date = null) {
-    return this.firestore.collection('meterDetails', ref => ref.where("ReadingTimeTimestamp", '>=', date)).valueChanges();
-    // const ref2 =  this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value));
-    // var meterDetailsRef = this.firestore.collection('meterDetails');
-    // meterDetailsRef.where("ReadingTime",">",)
-    
+  getMultipleUser(arrUserId) {
+    return this.firestore.collection('users', ref => ref.where('customerNumber', 'in', arrUserId)).valueChanges()
+  }
+  getMeterDetails(date = null,uid) {
+
+    return this.firestore.collection('meterDetails', ref => ref.where("ReadingTimeTimestamp", '>=', date).where('uid','==',uid ) ).valueChanges();
 
   }
 
- 
-
-
-  // getUserByCondn(condn) {
-  //   return this.firestore.collection('users').where("capital", "==", true).get();
-  // }
   createUser(content) {
 
     return this.afAuth2.auth
@@ -75,7 +66,4 @@ export class UserService {
     return userRef.set(content);
   }
 
-  // deleteNote(id: string) {
-  //   return this.getUser(id).delete();
-  // }
 }

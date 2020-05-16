@@ -1,0 +1,91 @@
+<div class="container-fluid">
+  <!-- Breadcrumbs-->
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a routerLink="/import">Import </a>
+    </li>
+    <li class="breadcrumb-item">
+      Imported History
+    </li>
+  </ol>
+
+  <!-- <alert></alert>  -->
+
+  <div fxLayout="row">
+    <a class="btn btn-primary is-success" routerLink="/import">
+      Import
+    </a>
+
+    <mat-form-field>
+      <input
+        matInput
+        (keyup)="applyFilter($event.target.value)"
+        placeholder="Filter"
+      />
+    </mat-form-field>
+
+    <hr />
+    <div class="example-container mat-elevation-z8">
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        matSort
+        class="mat-elevation-z8"
+      >
+        <!--- Note that these columns can be defined in any order.
+                          The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="ImportedDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Imported Date
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.importedDate }}
+            <span *ngIf="element.isNew" class="error">new</span>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="FileName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Imported File Name
+          </th>
+          <td mat-cell *matCellDef="let element">{{ element.importedFile }}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="MetersImported">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Meters Imported
+          </th>
+          <td mat-cell *matCellDef="let element">{{ element.importedData }}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="MetersNotImported">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Meters Not Imported
+          </th>
+          <td mat-cell *matCellDef="let element">0</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+          <td mat-cell *matCellDef="let element">
+            <i class="fa fa-trash"></i>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons
+      ></mat-paginator>
+    </div>
+  </div>
+</div>

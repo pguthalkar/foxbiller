@@ -1,0 +1,115 @@
+<div class="container-fluid">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a routerLink="/meter">Meter Details</a>
+        </li>
+    </ol>
+
+    <!-- <alert></alert>  -->
+
+    <div fxLayout="row">
+        <alert></alert>
+
+        <mat-form-field>
+            <input
+                matInput
+                (keyup)="applyFilter($event.target.value)"
+                placeholder="Filter"
+            />
+        </mat-form-field>
+
+        <hr />
+        <div class="example-container mat-elevation-z8">
+            <table
+                mat-table
+                [dataSource]="dataSource"
+                matSort
+                class="mat-elevation-z8"
+            >
+                <!--- Note that these columns can be defined in any order.
+                          The actual rendered columns are set as a property on the row definition" -->
+                <!-- <ng-container matColumnDef="Select">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox
+                    (change)="$event ? masterToggle() : null"
+                    [checked]=" selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected() "
+                    [aria-label]="checkboxLabel()"
+                  >
+                  </mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="$event  ? selection.toggle(element) : null"
+                    [checked]="selection.isSelected(element)"
+                    [aria-label]="checkboxLabel(element)"
+                  >
+                  </mat-checkbox>
+                </td>
+              </ng-container> -->
+
+                <!-- Position Column -->
+                <ng-container matColumnDef="InvoiceNo">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Invoice No.
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <a [routerLink]="['/meter/invoice', element.invoiceId]"
+                            >{{ element.invoiceId }}
+                        </a>
+                    </td>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="InvoiceDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Invoice Date
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.invoiceDate | date }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="CustomerName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Customer Name
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.customerName }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="meterId">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Meter Id
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.MeterSerialNumber }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="totalAmount">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Total Amount
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.totalAmount }}
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                ></tr>
+            </table>
+
+            <mat-paginator
+                [pageSizeOptions]="[5, 10, 20]"
+                showFirstLastButtons
+            ></mat-paginator>
+        </div>
+    </div>
+</div>

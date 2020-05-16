@@ -37,7 +37,7 @@
     <a
       class="nav-link"
       #meterlink
-      routerLink="/meter"
+      routerLink="/meter/all"
       routerLinkActive="active"
     >
       <i class="fa fa-square"></i>
@@ -49,7 +49,7 @@
     <a
       class="nav-link"
       #heatmeterlink
-      href="/meter/filter/heat"
+      routerLink="/meter/heat"
       routerLinkActive="active"
     >
       <i class="fa fa-square"></i>
@@ -60,7 +60,7 @@
     <a
       class="nav-link"
       #watermeterlink
-      href="/meter/filter/water"
+      routerLink="/meter/water"
       routerLinkActive="active"
     >
       <i class="fa fa-square"></i>
@@ -71,13 +71,24 @@
     <a
       class="nav-link"
       #electicitymeterlink
-      href="/meter/filter/electricity"
+      routerLink="/meter/electricity"
       routerLinkActive="active"
     >
       <i class="fa fa-square"></i>
       <span>Electricity Meter</span>
     </a>
   </li>
+  <li class="nav-item " [class.active]="invoicelink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
+      <a
+        class="nav-link"
+        #invoicelink
+        routerLink="/meter/invoices"
+        routerLinkActive="active"
+      >
+        <i class="fa fa-square"></i>
+        <span>Invoices</span>
+      </a>
+    </li>
 
   <li class="nav-item " [class.active]="settinglink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
     <a

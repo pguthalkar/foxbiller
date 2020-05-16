@@ -95,14 +95,14 @@ export class SettingComponent implements OnInit {
             bankBusinessName: ['', Validators.required],
             bankName: ['', Validators.required],
             bankAccountNumber: ['', Validators.required],
-            paymentTerm: ['', Validators.required]
+            paymentTerm: ['']
 
 
         });
         this.secondFormGroup = this._formBuilder.group({
             heatTarriff1: ['', Validators.required],
-            heatTarriff2: ['', Validators.required],
-            heatTarriff3: ['', Validators.required],
+            heatTarriff2: [''],
+            heatTarriff3: [''],
             heatCurrency: ['', Validators.required],
             heatTimezone: ['', Validators.required],
             heatBillingCycle: [''],

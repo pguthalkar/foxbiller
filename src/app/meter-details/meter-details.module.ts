@@ -8,9 +8,11 @@ import { MatTableModule,MatCheckboxModule, MatSortModule,MatGridListModule, MatF
 // import { AddUserComponent } from './add-user/add-user.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MeterDetailComponent } from './meter-detail/meter-detail.component';
-
+import { AlertModule } from '../_directives/alert.module';
+import { InvoicesComponent } from './invoices/invoices.component';
+import { InvoiceDetailComponent } from './invoice-detail/invoice-detail.component';
 @NgModule({
-  declarations: [ListMetersComponent, MeterDetailComponent],
+  declarations: [ListMetersComponent, MeterDetailComponent, InvoicesComponent, InvoiceDetailComponent],
   imports: [
     CommonModule,
     MeterRoutingModule,
@@ -29,7 +31,8 @@ import { MeterDetailComponent } from './meter-detail/meter-detail.component';
     MatChipsModule,
     MatListModule,
     MatDividerModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    AlertModule
   ],
   providers: [
     AlertService,

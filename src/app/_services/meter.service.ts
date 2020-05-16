@@ -26,16 +26,27 @@ export class MeterService {
 
 
 
-  getAllMeter() {
+  getAllMeter(condn) {
     // ['added', 'modified', 'removed']
     // return this.meterCollection.snapshotChanges();
-    return this.firestore.collection('meterDetails', ref => ref.orderBy('ReadingTimeTimestamp','desc')).valueChanges();
+    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value).orderBy('ReadingTimeTimestamp','desc')).valueChanges();
   }
 
-  getMeterDetailCondn(condn = null) {
+  getMeterHistory(condn) {
+    // ['added', 'modified', 'removed']
+    // return this.meterCollection.snapshotChanges();
+    return this.firestore.collection('importHistory', ref => ref.where(condn.key, '==', condn.value).orderBy('dateCreated','desc')).valueChanges();
+  }
+
+  getMeterDetailCondn(condn = null,condn2 =null) {
+    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value).where(condn2.key, '==', condn2.value).orderBy('ReadingTimeTimestamp','desc')).valueChanges();
+
+  }
+  getMeterDetailCondn1(condn = null) {
     return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value).orderBy('ReadingTimeTimestamp','desc')).valueChanges();
 
   }
+
   updateMeterSata(data:[]) {
     this.meterDataSubject.next(data);
   }
@@ -47,6 +58,7 @@ export class MeterService {
     return this.firestore.collection('meterDetails', ref => ref.where("ReadingTimeTimestamp", '>=', date)).valueChanges();
 
   }
+  
 
   createSetting(data) {
     const settingRef: AngularFirestoreDocument<User> = this.afs.doc(
@@ -55,10 +67,21 @@ export class MeterService {
     return settingRef.set(data);
   }
 
+  createInvoice(data) {
+    const invoiceRef: AngularFirestoreDocument<User> = this.afs.doc(
+      `invoices/${data.invoiceId}`
+    );
+    return invoiceRef.set(data);
+  }
+
   getSettings(uid) {
     return this.firestore.collection('settings', ref => ref.where("uid", '==', uid)).valueChanges();
-
   }
+
+  getInvoicesCondn(condn = null) {
+    return this.firestore.collection('invoices', ref => ref.where(condn.key, condn.operator, condn.value)).valueChanges();
+  }
+  
   updateSetting(data) {
     const settingRef: AngularFirestoreDocument<User> = this.afs.doc(
       `settings/${data.uid}`
@@ -81,6 +104,13 @@ export class MeterService {
       }).catch(error => {
         console.log(error);
       });
+  }
+
+  createImportHistory(data) {
+    const importHistoryRef: AngularFirestoreDocument<User> = this.afs.doc(
+      `importHistory/${data._id}`
+    );
+    return importHistoryRef.set(data);
   }
 
   // updateUser(id: string, data: any) {
