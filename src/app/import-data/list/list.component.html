@@ -59,7 +59,7 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             Meters Imported
           </th>
-          <td mat-cell *matCellDef="let element">{{ element.importedData }}</td>
+          <td mat-cell *matCellDef="let element"> <a style="color: blue; cursor:pointer"  (click)="openDialog(element.succededMeters,1)">{{ element.succededMeters ? element.succededMeters.length : 0 }}</a></td>
         </ng-container>
 
         <!-- Weight Column -->
@@ -67,7 +67,7 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             Meters Not Imported
           </th>
-          <td mat-cell *matCellDef="let element">0</td>
+          <td mat-cell *matCellDef="let element"><a  style="color: blue; cursor:pointer" (click)="openDialog(element.failedMeters,0)" >{{ element.failedMeters ? element.failedMeters.length : 0 }} </a></td>
         </ng-container>
 
         <!-- Weight Column -->

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild ,Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MeterService, SharedService } from '../../_services/index';
 import { MatPaginator, MatSort } from '@angular/material';
@@ -8,7 +8,7 @@ import { filter, map } from 'rxjs/operators';
 import 'rxjs/add/observable/of';
 import { ActivatedRoute } from '@angular/router';
 import { element } from 'protractor';
-
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
@@ -24,7 +24,7 @@ export class ListComponent implements OnInit {
   // @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(private meterService: MeterService, private router: Router, public sharedService: SharedService, private route: ActivatedRoute) { }
+  constructor(public dialog: MatDialog,private meterService: MeterService, private router: Router, public sharedService: SharedService, private route: ActivatedRoute) { }
 
   /**
   * Set the paginator and sort after the view init since this component will
@@ -83,5 +83,50 @@ export class ListComponent implements OnInit {
 
   }
 
+  openDialog(data,isSuccess): void {
+   
+    const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
+      width: '850px',
+      data:{ isSuccess : isSuccess, data : data}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+   
+    });
+  }
+
+
+}
+
+
+
+@Component({
+  selector: 'imported-status',
+  templateUrl: './imported-status.html',
+  styleUrls: ['./list.component.css']
+})
+export class DialogOverviewExampleDialog {
+
+
+  constructor(
+    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
+    @Inject(MAT_DIALOG_DATA) public data) {
+   
+    }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+  displayedColumns: string[] = ['date', 'meterId', 'status'];
+  // success = this.success;
+ 
+  dataSource = this.data.data.map(el => {
+     el.date = new Date(el.date.seconds * 1000 );
+     el.status = this.data.isSuccess ? 'Imported' : 'Failed';
+     return el
+  });
+
+  
 
 }

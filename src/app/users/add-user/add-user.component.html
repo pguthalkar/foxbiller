@@ -1,357 +1,448 @@
 <div class="container-fluid">
-  <!-- Breadcrumbs-->
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item">
-      <a routerLink="/users">Users</a>
-    </li>
-    <li class="breadcrumb-item active">Add User</li>
-  </ol>
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a routerLink="/users">Users</a>
+        </li>
+        <li class="breadcrumb-item active">Add User {{loggedInUser.uid}}</li>
+    </ol>
 
-  <!-- <alert></alert>  -->
-  <form
-    [formGroup]="userForm"
-    autocomplete="off"
-    novalidate
-    (ngSubmit)="createUser(userForm.value)"
-    fxLayout="column wrap"
-    fxLayoutAlign="center center"
-    fxLayoutGap="10px"
-  >
-    <mat-grid-list cols="4" rowHeight="1000px">
-      <mat-grid-tile [colspan]="1">
-        <h3>Customer Overview</h3>
-      </mat-grid-tile>
-      <mat-grid-tile [colspan]="3">
-        <div class="card-body form-section">
-          <section fxLayout="row wrap" fxLayoutAlign="center center">
-            <mat-card>
-              <mat-card-content>
-                <div fxLayout="column" class="row-form">
-                  <mat-form-field>
-                    <input
-                      matInput
-                      type="text"
-                      placeholder="Name"
-                      formControlName="name"
-                      id="name"
-                    />
-                    <mat-hint align="end"
-                      >Not more then 60 characters long.</mat-hint
-                    >
-                    <mat-error *ngIf="hasError('name', 'required')"
-                      >Name is required</mat-error
-                    >
-                    <mat-error *ngIf="hasError('name', 'maxlength')"
-                      >You have more than 60 characters
-                    </mat-error>
-                  </mat-form-field>
+    <!-- <alert></alert>  -->
+    <form
+        [formGroup]="userForm"
+        autocomplete="off"
+        novalidate
+        (ngSubmit)="createUser(userForm.value)"
+        fxLayout="column wrap"
+        fxLayoutAlign="center center"
+        fxLayoutGap="10px"
+    >
+        <mat-grid-list cols="4" rowHeight="1000px">
+            <mat-grid-tile [colspan]="1">
+                <h3>Customer Overview</h3>
+                
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="3">
+                <div class="card-body form-section">
+                  
+                    <section fxLayout="row wrap" fxLayoutAlign="center center">
+                        <mat-card>
+                          
+                            <mat-card-content>
+                                <div fxLayout="column" class="row-form">
+                                    <mat-form-field>
+                                        <input
+                                            matInput
+                                            type="text"
+                                            placeholder="Name"
+                                            formControlName="name"
+                                            id="name"
+                                        />
+                                        <mat-hint align="end"
+                                            >Not more then 60 characters
+                                            long.</mat-hint
+                                        >
+                                        <mat-error
+                                            *ngIf="hasError('name', 'required')"
+                                            >Name is required</mat-error
+                                        >
+                                        <mat-error
+                                            *ngIf="
+                                                hasError('name', 'maxlength')
+                                            "
+                                            >You have more than 60 characters
+                                        </mat-error>
+                                    </mat-form-field>
 
-                  <mat-form-field>
-                    <input
-                      matInput
-                      type="text"
-                      placeholder="Email"
-                      formControlName="email"
-                      id="email"
-                    />
-                    <mat-hint align="end"
-                      >Not more then 60 characters long.</mat-hint
-                    >
-                    <mat-error *ngIf="hasError('email', 'required')"
-                      >email is required</mat-error
-                    >
-                    <mat-error *ngIf="hasError('email', 'maxlength')"
-                      >You have more than 60 characters
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-                <div fxLayout="row" class="row-form">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>Country code</mat-label>
-                    <mat-select formControlName="code">
-                      <mat-option
-                        *ngFor="let country of countryCode"
-                        [value]="country.code"
-                      >
-                        {{ country.name }} {{ country.code }}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <mat-form-field class="example-full-width">
-                    <input
-                      matInput
-                      type="number"
-                      placeholder="Office Phone Number"
-                      formControlName="officePhone"
-                      id="officePhone"
-                    />
-                    <mat-error *ngIf="hasError('officePhone', 'required')"
-                      >phone is required</mat-error
-                    >
-                  </mat-form-field>
-                </div>
+                                    <mat-form-field>
+                                        <input
+                                            matInput
+                                            type="text"
+                                            placeholder="Email"
+                                            formControlName="email"
+                                            id="email"
+                                        />
+                                        <mat-hint align="end"
+                                            >Not more then 60 characters
+                                            long.</mat-hint
+                                        >
+                                        <mat-error
+                                            *ngIf="
+                                                hasError('email', 'required')
+                                            "
+                                            >email is required</mat-error
+                                        >
+                                        <mat-error
+                                            *ngIf="
+                                                hasError('email', 'maxlength')
+                                            "
+                                            >You have more than 60 characters
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div fxLayout="row" class="row-form">
+                                    <mat-form-field class="example-full-width">
+                                        <mat-label>Country code</mat-label>
+                                        <mat-select formControlName="code">
+                                            <mat-option
+                                                *ngFor="
+                                                    let country of countryCode
+                                                "
+                                                [value]="country.code"
+                                            >
+                                                {{ country.name }}
+                                                {{ country.code }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field class="example-full-width">
+                                        <input
+                                            matInput
+                                            type="number"
+                                            placeholder="Office Phone Number"
+                                            formControlName="officePhone"
+                                            id="officePhone"
+                                        />
+                                        <mat-error
+                                            *ngIf="
+                                                hasError(
+                                                    'officePhone',
+                                                    'required'
+                                                )
+                                            "
+                                            >phone is required</mat-error
+                                        >
+                                    </mat-form-field>
+                                </div>
 
-                <mat-form-field class="full-form-field">
-                  <mat-label>User Role</mat-label>
-                  <mat-select formControlName="role">
-                    <mat-option
-                      *ngFor="let role of userRoles"
-                      [value]="role.value"
-                    >
-                      {{ role.name }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
+                                <mat-form-field class="full-form-field">
+                                    <mat-label>User Role</mat-label>
+                                    <mat-select formControlName="role">
+                                        <mat-option
+                                            *ngFor="let role of userRoles"
+                                            [value]="role.value"
+                                        >
+                                            {{ role.name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
 
-                <mat-form-field class="full-form-field">
-                  <input
-                    matInput
-                    type="text"
-                    placeholder="Company"
-                    formControlName="company"
-                    id="company"
-                  />
-                  <mat-hint align="end"
-                    >Not more then 60 characters long.</mat-hint
-                  >
-                  <mat-error *ngIf="hasError('company', 'required')"
-                    >company is required</mat-error
-                  >
-                </mat-form-field>
+                                <mat-form-field class="full-form-field">
+                                    <input
+                                        matInput
+                                        type="text"
+                                        placeholder="Company"
+                                        formControlName="company"
+                                        id="company"
+                                    />
+                                    <mat-hint align="end"
+                                        >Not more then 60 characters
+                                        long.</mat-hint
+                                    >
+                                    <mat-error
+                                        *ngIf="hasError('company', 'required')"
+                                        >company is required</mat-error
+                                    >
+                                </mat-form-field>
 
-                <mat-form-field class="full-form-field">
-                  <input
-                    matInput
-                    type="text"
-                    placeholder="Company Registration number"
-                    formControlName="companyRegNo"
-                    id="companyRegNo"
-                  />
-                  <mat-hint align="end"
-                    >Not more then 60 characters long.</mat-hint
-                  >
-                  <mat-error *ngIf="hasError('companyRegNo', 'required')"
-                    >Registration number is required</mat-error
-                  >
-                </mat-form-field>
+                                <mat-form-field class="full-form-field">
+                                    <input
+                                        matInput
+                                        type="text"
+                                        placeholder="Company Registration number"
+                                        formControlName="companyRegNo"
+                                        id="companyRegNo"
+                                    />
+                                    <mat-hint align="end"
+                                        >Not more then 60 characters
+                                        long.</mat-hint
+                                    >
+                                    <mat-error
+                                        *ngIf="
+                                            hasError('companyRegNo', 'required')
+                                        "
+                                        >Registration number is
+                                        required</mat-error
+                                    >
+                                </mat-form-field>
 
-                <mat-form-field class="full-form-field">
-                  <input
-                    matInput
-                    type="number"
-                    placeholder="Phone Number"
-                    formControlName="phone"
-                    id="phone"
-                  />
-                  <mat-error *ngIf="hasError('phone', 'required')"
-                    >phone is required</mat-error
-                  >
-                </mat-form-field>
-                <mat-form-field class="full-form-field">
-                  <input
-                    matInput
-                    type="text"
-                    placeholder="Addres"
-                    formControlName="address"
-                    id="address"
-                  />
-                  <mat-error *ngIf="hasError('address', 'required')"
-                    >address is required</mat-error
-                  >
-                </mat-form-field>
+                                <mat-form-field class="full-form-field">
+                                    <input
+                                        matInput
+                                        type="number"
+                                        placeholder="Phone Number"
+                                        formControlName="phone"
+                                        id="phone"
+                                    />
+                                    <mat-error
+                                        *ngIf="hasError('phone', 'required')"
+                                        >phone is required</mat-error
+                                    >
+                                </mat-form-field>
+                                <mat-form-field class="full-form-field">
+                                    <input
+                                        matInput
+                                        type="text"
+                                        placeholder="Addres"
+                                        formControlName="address"
+                                        id="address"
+                                    />
+                                    <mat-error
+                                        *ngIf="hasError('address', 'required')"
+                                        >address is required</mat-error
+                                    >
+                                </mat-form-field>
 
-                <mat-form-field class="full-form-field">
-                  <input
-                    matInput
-                    type="text"
-                    placeholder="Appartment / Suit"
-                    formControlName="addressDetail"
-                    id="addressDetail"
-                  />
-                  <mat-error *ngIf="hasError('addressDetail', 'required')"
-                    >Field is required</mat-error
-                  >
-                </mat-form-field>
+                                <mat-form-field class="full-form-field">
+                                    <input
+                                        matInput
+                                        type="text"
+                                        placeholder="Appartment / Suit"
+                                        formControlName="addressDetail"
+                                        id="addressDetail"
+                                    />
+                                    <mat-error
+                                        *ngIf="
+                                            hasError(
+                                                'addressDetail',
+                                                'required'
+                                            )
+                                        "
+                                        >Field is required</mat-error
+                                    >
+                                </mat-form-field>
 
-                <mat-form-field class="full-form-field">
-                  <input
-                    matInput
-                    type="text"
-                    placeholder="City"
-                    formControlName="city"
-                    id="city"
-                  />
-                  <mat-error *ngIf="hasError('city', 'required')"
-                    >City is required</mat-error
-                  >
-                </mat-form-field>
+                                <mat-form-field class="full-form-field">
+                                    <input
+                                        matInput
+                                        type="text"
+                                        placeholder="City"
+                                        formControlName="city"
+                                        id="city"
+                                    />
+                                    <mat-error
+                                        *ngIf="hasError('city', 'required')"
+                                        >City is required</mat-error
+                                    >
+                                </mat-form-field>
 
-                <div fxLayout="row" class="row-form">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>Country / Region</mat-label>
-                    <mat-select formControlName="country">
-                      <mat-option
-                        *ngFor="let country of countryCode"
-                        [value]="country.name"
-                      >
-                        {{ country.name }}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
+                                <div fxLayout="row" class="row-form">
+                                    <mat-form-field class="example-full-width">
+                                        <mat-label>Country / Region</mat-label>
+                                        <mat-select formControlName="country">
+                                            <mat-option
+                                                *ngFor="
+                                                    let country of countryCode
+                                                "
+                                                [value]="country.name"
+                                            >
+                                                {{ country.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
 
-                  <mat-form-field>
-                    <input
-                      matInput
-                      type="text"
-                      placeholder="State / Territory"
-                      formControlName="state"
-                      id="state"
-                    />
-                    <mat-error *ngIf="hasError('state', 'required')"
-                      >state is required</mat-error
-                    >
-                  </mat-form-field>
-                  <mat-form-field>
-                    <input
-                      matInput
-                      type="text"
-                      placeholder="Postal Code"
-                      formControlName="postalCode"
-                      id="postalCode"
-                    />
-                    <mat-error *ngIf="hasError('postalCode', 'required')"
-                      >postal code is required</mat-error
-                    >
-                  </mat-form-field>
-                </div>
-                <mat-form-field class="full-form-field">
-                  <input
-                    matInput
-                    type="text"
-                    placeholder="Add Note"
-                    formControlName="note"
-                    id="note"
-                  />
-                  <mat-error *ngIf="hasError('note', 'required')"
-                    >Note is required</mat-error
-                  >
-                </mat-form-field>
-                <mat-form-field class="full-form-field">
-                    <input
-                      matInput
-                      type="text"
-                      placeholder="Customer Number"
-                      formControlName="customerNumber"
-                      id="customerNumber"
-                    />
-                    <mat-error *ngIf="hasError('customerNumber', 'required')"
-                      >customerNumber is required</mat-error
-                    >
-                  </mat-form-field>
-              </mat-card-content>
-              <!-- <mat-card-actions align="center">
+                                    <mat-form-field>
+                                        <input
+                                            matInput
+                                            type="text"
+                                            placeholder="State / Territory"
+                                            formControlName="state"
+                                            id="state"
+                                        />
+                                        <mat-error
+                                            *ngIf="
+                                                hasError('state', 'required')
+                                            "
+                                            >state is required</mat-error
+                                        >
+                                    </mat-form-field>
+                                    <mat-form-field>
+                                        <input
+                                            matInput
+                                            type="text"
+                                            placeholder="Postal Code"
+                                            formControlName="postalCode"
+                                            id="postalCode"
+                                        />
+                                        <mat-error
+                                            *ngIf="
+                                                hasError(
+                                                    'postalCode',
+                                                    'required'
+                                                )
+                                            "
+                                            >postal code is required</mat-error
+                                        >
+                                    </mat-form-field>
+                                </div>
+                                <mat-form-field class="full-form-field">
+                                    <input
+                                        matInput
+                                        type="text"
+                                        placeholder="Add Note"
+                                        formControlName="note"
+                                        id="note"
+                                    />
+                                    <mat-error
+                                        *ngIf="hasError('note', 'required')"
+                                        >Note is required</mat-error
+                                    >
+                                </mat-form-field>
+                                <mat-form-field class="full-form-field">
+                                    <input
+                                        matInput
+                                        type="text"
+                                        placeholder="Customer Number"
+                                        formControlName="customerNumber"
+                                        id="customerNumber"
+                                    />
+                                    <mat-error
+                                        *ngIf="
+                                            hasError(
+                                                'customerNumber',
+                                                'required'
+                                            )
+                                        "
+                                        >customerNumber is required</mat-error
+                                    >
+                                </mat-form-field>
+                            </mat-card-content>
+                            <!-- <mat-card-actions align="center">
                                         <button mat-raised-button color="primary" [disabled]="!userForm.valid">Create</button>
                                         <button type="button" mat-raised-button color="warn" (click)="onCancel()">Cancel</button>
                                     </mat-card-actions> -->
-            </mat-card>
-          </section>
-        </div>
-      </mat-grid-tile>
-    </mat-grid-list>
-    <mat-grid-list cols="4" rowHeight="{{ meterSectionHeight }}px">
-      <mat-grid-tile [colspan]="1">
-        <h3>Meter Details</h3>
-      </mat-grid-tile>
-      <mat-grid-tile [colspan]="3">
-        <div class="card-body form-section" style="width: 550px;">
-          <section fxLayout="row wrap" fxLayoutAlign="center center">
-            <mat-card>
-              <div formArrayName="meters">
-                <mat-card-content
-                  *ngFor="
-                    let meter of userForm.get('meters')['controls'];
-                    let i = index
-                  "
-                >
-                  <div fxLayout="column" [formGroupName]="i">
-                    <mat-form-field>
-                      <input
-                        matInput
-                        type="text"
-                        placeholder="Meter Id"
-                        formControlName="meterId"
-                        id="meterId"
-                      />
-                      <mat-error *ngIf="hasError('name', 'required')"
-                        >Meter Id is required</mat-error
-                      >
-                    </mat-form-field>
+                        </mat-card>
+                    </section>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+        <mat-grid-list cols="4" rowHeight="{{ meterSectionHeight }}px">
+            <mat-grid-tile [colspan]="1">
+                <h3>Meter Details </h3>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="3">
+                <div class="card-body form-section" style="width: 550px;">
+                    <section fxLayout="row wrap" fxLayoutAlign="center center">
+                        <mat-card>
+                            <div formArrayName="meters">
+                                <mat-card-content
+                                    *ngFor="
+                                        let meter of userForm.get('meters')[
+                                            'controls'
+                                        ];
+                                        let i = index
+                                    "
+                                >
+                                    <div fxLayout="column" [formGroupName]="i">
+                                        <mat-form-field>
+                                            <input
+                                                matInput
+                                                type="text"
+                                                placeholder="Meter Id"
+                                                formControlName="meterId"
+                                                id="meterId"
+                                            />
+                                            <mat-error
+                                                *ngIf="
+                                                    hasError('name', 'required')
+                                                "
+                                                >Meter Id is required</mat-error
+                                            >
+                                        </mat-form-field>
 
-                    <mat-form-field class="example-full-width">
-                      <mat-label>Meter Type</mat-label>
-                      <mat-select formControlName="meterType">
-                        <mat-option
-                          *ngFor="let type of meterTypes"
-                          [value]="type.name"
-                        >
-                          {{ type.name }}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                    <mat-form-field>
-                      <input
-                        matInput
-                        type="text"
-                        placeholder="First Meter Reading"
-                        formControlName="firstMeterReading"
-                        id="firstMeterReading"
-                      />
-                     
-                    </mat-form-field>
-                    <mat-form-field>
-                      <input
+                                        <mat-form-field
+                                            class="example-full-width"
+                                        >
+                                            <mat-label>Meter Type</mat-label>
+                                            <mat-select
+                                                formControlName="meterType"
+                                            >
+                                                <mat-option
+                                                    *ngFor="
+                                                        let type of meterTypes
+                                                    "
+                                                    [value]="type.name"
+                                                >
+                                                    {{ type.name }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field>
+                                            <input
+                                                matInput
+                                                type="text"
+                                                placeholder="First Meter Reading"
+                                                formControlName="firstMeterReading"
+                                                id="firstMeterReading"
+                                            />
+                                        </mat-form-field>
+                                        <mat-form-field>
+                                            <!-- <input
                         matInput
                         type="text"
                         placeholder="First Reading Date"
                         formControlName="firstMeterReadingDate"
                         id="firstMeterReadingDate"
-                      />
-                     
-                    </mat-form-field>
-                    <button
-                      mat-raised-button
-                      color="danger"
-                      *ngIf="isRemoveMeterButton"
-                      type="button"
-                      (click)="removeMeter(i)"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </mat-card-content>
-              </div>
-              <mat-card-actions align="center" *ngIf="isAddMeterButton">
-                <button
-                  mat-raised-button
-                  color="primary"
-                  type="button"
-                  (click)="addMeter()"
-                >
-                  Add Meter
-                </button>
-              </mat-card-actions>
-            </mat-card>
-          </section>
-        </div>
-      </mat-grid-tile>
-    </mat-grid-list>
-    <mat-card-actions align="center">
-      <button mat-raised-button color="primary" [disabled]="!userForm.valid">
-        Create
-      </button>
-      <button type="button" mat-raised-button color="warn" (click)="onCancel()">
-        Cancel
-      </button>
-    </mat-card-actions>
-  </form>
+                      /> -->
+                                            <input
+                                                matInput
+                                                [matDatepicker]="picker1"
+                                                formControlName="firstMeterReadingDate"
+                                            />
+                                            <mat-datepicker-toggle
+                                                matSuffix
+                                                [for]="picker1"
+                                            ></mat-datepicker-toggle>
+                                            <mat-datepicker
+                                                #picker1
+                                            ></mat-datepicker>
+                                        </mat-form-field>
+                                        <button
+                                            mat-raised-button
+                                            color="danger"
+                                            *ngIf="isRemoveMeterButton"
+                                            type="button"
+                                            (click)="removeMeter(i)"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                </mat-card-content>
+                            </div>
+                            <mat-card-actions
+                                align="center"
+                                *ngIf="isAddMeterButton"
+                            >
+                                <button
+                                    mat-raised-button
+                                    color="primary"
+                                    type="button"
+                                    (click)="addMeter()"
+                                >
+                                    Add Meter
+                                </button>
+                            </mat-card-actions>
+                        </mat-card>
+                    </section>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+        <mat-card-actions align="center">
+            <button
+                mat-raised-button
+                color="primary"
+                [disabled]="!userForm.valid"
+            >
+                Create
+            </button>
+            <button
+                type="button"
+                mat-raised-button
+                color="warn"
+                (click)="onCancel()"
+            >
+                Cancel
+            </button>
+        </mat-card-actions>
+    </form>
 </div>

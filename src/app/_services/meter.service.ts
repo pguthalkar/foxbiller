@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 
-import { Observable,BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { auth } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -29,25 +29,25 @@ export class MeterService {
   getAllMeter(condn) {
     // ['added', 'modified', 'removed']
     // return this.meterCollection.snapshotChanges();
-    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value).orderBy('ReadingTimeTimestamp','desc')).valueChanges();
+    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value).orderBy('ReadingTimeTimestamp', 'desc')).valueChanges();
   }
 
   getMeterHistory(condn) {
     // ['added', 'modified', 'removed']
     // return this.meterCollection.snapshotChanges();
-    return this.firestore.collection('importHistory', ref => ref.where(condn.key, '==', condn.value).orderBy('dateCreated','desc')).valueChanges();
+    return this.firestore.collection('importHistory', ref => ref.where(condn.key, '==', condn.value).orderBy('dateCreated', 'desc')).valueChanges();
   }
 
-  getMeterDetailCondn(condn = null,condn2 =null) {
-    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value).where(condn2.key, '==', condn2.value).orderBy('ReadingTimeTimestamp','desc')).valueChanges();
+  getMeterDetailCondn(condn = null, condn2 = null) {
+    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value).where(condn2.key, '==', condn2.value).orderBy('ReadingTimeTimestamp', 'desc')).valueChanges();
 
   }
   getMeterDetailCondn1(condn = null) {
-    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value).orderBy('ReadingTimeTimestamp','desc')).valueChanges();
+    return this.firestore.collection('meterDetails', ref => ref.where(condn.key, '==', condn.value).orderBy('ReadingTimeTimestamp', 'desc')).valueChanges();
 
   }
 
-  updateMeterSata(data:[]) {
+  updateMeterSata(data: []) {
     this.meterDataSubject.next(data);
   }
 
@@ -58,13 +58,21 @@ export class MeterService {
     return this.firestore.collection('meterDetails', ref => ref.where("ReadingTimeTimestamp", '>=', date)).valueChanges();
 
   }
-  
+
 
   createSetting(data) {
     const settingRef: AngularFirestoreDocument<User> = this.afs.doc(
       `settings/${data.uid}`
     );
     return settingRef.set(data);
+  }
+
+  deleteMeter(docId) {
+    // return this.firestore.collection('meterDetails', ref => ref.where('CustomerNumber', '==', CustomerNumber).orderBy('ReadingTimeTimestamp', 'asc').limit(1));
+    this.afs.doc(
+      `meterDetails/${docId}`
+    ).delete();
+   
   }
 
   createInvoice(data) {
@@ -74,6 +82,13 @@ export class MeterService {
     return invoiceRef.set(data);
   }
 
+  createMeter(data) {
+    let id = `${data.CustomerNumber + `-` + data.meters.meterId + `-` + data.readingTime}`;
+    const meterDetailsRef: AngularFirestoreDocument = this.afs.doc(
+      `meterDetails/`
+    )
+  }
+
   getSettings(uid) {
     return this.firestore.collection('settings', ref => ref.where("uid", '==', uid)).valueChanges();
   }
@@ -81,7 +96,7 @@ export class MeterService {
   getInvoicesCondn(condn = null) {
     return this.firestore.collection('invoices', ref => ref.where(condn.key, condn.operator, condn.value)).valueChanges();
   }
-  
+
   updateSetting(data) {
     const settingRef: AngularFirestoreDocument<User> = this.afs.doc(
       `settings/${data.uid}`

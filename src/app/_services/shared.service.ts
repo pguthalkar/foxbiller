@@ -53,6 +53,52 @@ export class SharedService {
     return totalAmount;
   }
 
+  getMeterTypeReading(type) {
+    let readingType;
+    switch (type) {
+      case 'MULTICAL 602':
+       readingType = 'CoolingEnergy';
+        break;
+      case 'MULTICAL 62':
+       readingType = 'ElectricityEnergy';
+        break;
+      case 'OMNIPOWER':
+       readingType = 'VolumeWater';
+        break;
+    }
+    return readingType;
+  }
+
+  getMeterTypeId(type) {
+    let meterType;
+    switch (type.toLowerCase()) {
+      case 'heat':
+       meterType = 'MULTICAL 602';
+        break;
+      case 'water':
+       meterType = 'MULTICAL 62';
+        break;
+      case 'electricity':
+       meterType = 'OMNIPOWER';
+        break;
+    }
+    return meterType;
+  }
+
+  getFormatDate(date) {
+    var dd = date.getDate(); 
+    var mm = date.getMonth() + 1; 
+
+    var yyyy = date.getFullYear(); 
+    if (dd < 10) { 
+        dd = '0' + dd; 
+    } 
+    if (mm < 10) { 
+        mm = '0' + mm; 
+    } 
+    return  mm + '/' + dd + '/' + yyyy; 
+  }
+
   getMeterLastReading(type,data) {
 
     switch (type) {

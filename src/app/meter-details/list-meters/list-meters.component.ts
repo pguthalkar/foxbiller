@@ -16,16 +16,60 @@ export class ListMetersComponent implements OnInit {
 
     meters;
     selection = new SelectionModel<any>(true, []);
-
+    months = [
+        {
+            name: 'Jan',
+            value: 1
+        },{
+            name: 'Feb',
+            value: 2
+        },{
+            name: 'Mar',
+            value: 3
+        },{
+            name: 'Apr',
+            value: 4
+        },{
+            name: 'May',
+            value: 5
+        },{
+            name: 'June',
+            value: 6
+        },{
+            name: 'July',
+            value: 7
+        },{
+            name: 'Aug',
+            value: 8
+        },{
+            name: 'Sept',
+            value: 9
+        },{
+            name: 'Oct',
+            value: 10
+        },{
+            name: 'Nov',
+            value: 11
+        },{
+            name: 'Dec',
+            value: 12
+        },
+    ];
+    
+    years = [];
     dataSource;
     loggedInUser;
+    selectedMonth = null;
+    selectedYear = null;
     displayedColumns = ['Select', 'MeterSerialNumber', 'ReadingTime', 'CustomerName', 'type', 'status', 'meterCondition', 'invoice','action'];
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
     // @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor(private meterService: MeterService, private router: Router, public sharedService: SharedService, private route: ActivatedRoute, private firebaseService: FirebaseService, private alertService: AlertService) { }
+    constructor(private meterService: MeterService, private router: Router, public sharedService: SharedService, private route: ActivatedRoute, private firebaseService: FirebaseService, private alertService: AlertService) {
+        this.createYears();
+     }
 
     /**
     * Set the paginator and sort after the view init since this component will
@@ -42,9 +86,28 @@ export class ListMetersComponent implements OnInit {
         this.dataSource.filter = filterValue;
     }
 
+    applyMonthFilter(event) {
+        this.selectedMonth = event.value;
+        if(this.selectedMonth && this.selectedYear) {
+            this.ngOnInit();
+        }
+    }
+    applyYearFilter(event) {
+        this.selectedYear = event.value;
+        if(this.selectedMonth && this.selectedYear) {
+            this.ngOnInit();
+        }
+    }
+
+
+    createYears() {
+        for (let index = 2018; index <= new Date().getFullYear(); index++) {
+            this.years.push(index);
+        }
+    }
 
     ngOnInit() {
-
+        
         // const type: string = this.route.snapshot.paramMap.get('type');
         let type;
         let arrParams = window.location.pathname.split("/").filter(function(el) {
@@ -146,15 +209,26 @@ export class ListMetersComponent implements OnInit {
         // let arrMeter = meterData.map( meter => {
 
         // });
-        let arrMeter = {};
-        for (const meter of meterData) {
-            if (!arrMeter[meter.MeterSerialNumber]) {
-                arrMeter[meter.MeterSerialNumber] = meter;
+        if(this.selectedMonth && this.selectedYear) {
+            let filterData =  meterData.filter( meter => {
+                let readingMonth = new Date(meter.ReadingTime).getMonth() + 1;
+                let readingYear = new Date(meter.ReadingTime).getFullYear();
+                return readingMonth == this.selectedMonth && readingYear == this.selectedYear;
+            });
+            console.log(filterData);
+            return filterData;
+
+        } else {
+            let arrMeter = {};
+            for (const meter of meterData) {
+                if (!arrMeter[meter.MeterSerialNumber]) {
+                    arrMeter[meter.MeterSerialNumber] = meter;
+                }
             }
+            // let keys = Object.values(arrMeter);
+            return Object.values(arrMeter);
         }
-        // let keys = Object.values(arrMeter);
-        return Object.values(arrMeter);
-        // console.log(arrMeter);
+        
     }
 
     isAllSelected() {
@@ -217,7 +291,7 @@ export class ListMetersComponent implements OnInit {
             for (const meter of meters) {
                 
 
-                if (!currentMeterSerialNumbers.includes(meter.MeterSerialNumber) && meter.totalAmount) {
+                if (!currentMeterSerialNumbers.includes(meter.MeterSerialNumber)) {
                     let docId = 'INVO' + new Date().getTime() + index;
                     index++;
                     let invoice = {};

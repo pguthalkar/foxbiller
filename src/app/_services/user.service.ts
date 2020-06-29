@@ -33,12 +33,12 @@ export class UserService {
 
   }
 
-  getMultipleUser(arrUserId) {
-    return this.firestore.collection('users', ref => ref.where('customerNumber', 'in', arrUserId)).valueChanges()
+  getMultipleUser(uid) {
+    return this.firestore.collection('users', ref => ref.where('parent', '==', uid)).valueChanges()
   }
   getMeterDetails(date = null,uid) {
 
-    return this.firestore.collection('meterDetails', ref => ref.where("ReadingTimeTimestamp", '>=', date).where('uid','==',uid ) ).valueChanges();
+    return this.firestore.collection('meterDetails', ref => ref.where("ReadingTimeTimestamp", '>=', date)).valueChanges();
 
   }
 

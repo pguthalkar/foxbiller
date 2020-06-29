@@ -11,7 +11,7 @@ import { AlertService, MeterService, UserService,SharedService } from '../../_se
   styleUrls: ['./invoice-detail.component.css']
 })
 export class InvoiceDetailComponent implements OnInit {
-  @ViewChild('content', { static: false }) content: ElementRef;
+  @ViewChild('content',{ static: false }) content: ElementRef;
 
   constructor(private meterService: MeterService, private sharedService:SharedService, private route: ActivatedRoute,private userService:UserService,) { }
   invoiceData;

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertService, FirebaseService, UserService } from '../../_services/index';
+import { AlertService,MeterService, UserService } from '../../_services/index';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -9,8 +9,9 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class UserDetailComponent implements OnInit {
 
-  constructor(private route:ActivatedRoute, private userService : UserService) { }
+  constructor(private route:ActivatedRoute, private userService : UserService, private meterService:MeterService) { }
   userData ;
+  invoices;
   ngOnInit() {
     const userId: string = this.route.snapshot.paramMap.get('id');
     let condn = {
@@ -19,7 +20,16 @@ export class UserDetailComponent implements OnInit {
     }
     this.userService.getUserCondn(condn).subscribe(userData => {
 
+
       this.userData = userData ? userData[0] : {};
+      
+      this.meterService.getInvoicesCondn({ key : 'customerId',operator:'==',value:this.userData.customerNumber}).subscribe( invoices => {
+        this.invoices = invoices;
+        this.invoices = this.invoices.map(invoice => {
+          invoice.invoiceDate = new Date(invoice.invoiceDate.seconds*1000);
+          return invoice;
+        })
+      })
 
     });
   }

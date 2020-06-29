@@ -139,6 +139,8 @@ export class ImportComponent implements OnInit {
   loggedInUser;
   settingData;
   fileName;
+  failedMeters = [];
+  succededMeters =[];
   ngOnInit() {
     this.loggedInUser = JSON.parse(this.sharedService.getLocalStorage('user'));
     this.settingData = this.sharedService.getLocalStorage('settingData') ? JSON.parse(this.sharedService.getLocalStorage('settingData')) : null;
@@ -262,10 +264,6 @@ export class ImportComponent implements OnInit {
 
   }
 
-  // getDateDiffDays(date1:String , date2:String) {
-  //   return  
-  // }
-
   async importData() {
     if (!this.settingData) {
       this.alertService.error("Please update Setting data.");
@@ -303,175 +301,217 @@ export class ImportComponent implements OnInit {
       lastmonthDate.setMonth(lastmonthDate.getMonth() - 1);
       let inputDate = new Date(this.inputData[0].ReadingTime);
       let inputMonth = inputDate.getMonth();
-      this.userService.getMeterDetails(lastmonthDate.getTime(), 
-      this.userData['uid']).subscribe(resData => {
-        if (this.isImported) {
-          return false;
-        }
-        this.isImported = true;
-        let currentMonthData = resData.find(data => {
-          if (new Date(data['ReadingTime']).getMonth() == inputMonth) {
-            return true;
+      this.userService.getMeterDetails(lastmonthDate.getTime(),
+        this.userData['uid']).subscribe(resData => {
+          resData = resData.filter((el: any) => el.uid == this.userData['uid']);
+          if (this.isImported) {
+            this.isImported = false;
+            return false;
           }
-          if (this.sharedService.dateDiffIndays(new Date(data['ReadingTime']), inputDate) < 25) {
-            return true;
+          this.isImported = true;
+          let currentMonthData = resData.find(data => {
+            if (new Date(data['ReadingTime']).getMonth() == inputMonth) {
+              return true;
+            }
+            if (this.sharedService.dateDiffIndays(new Date(data['ReadingTime']), inputDate) < 25) {
+              return true;
+            }
+            return false;
+          });
+
+
+          if (currentMonthData) {
+            console.log('data is already there');
+            this.alertService.error("Cannot import this data for this month.");
+            return false;
+          } else {
+            
+            var batch = this.firebaseService.getBatch();
+            if (resData && resData.length > 0) {
+
+              let arrBilldata = {};
+              let resBillData = [];
+              resData.forEach(billdata => {
+                arrBilldata[billdata['CustomerNumber']] = billdata;
+              })
+              this.inputData.forEach(inputBillData => {
+                resBillData.push(this.calculateBill(inputBillData, arrBilldata[inputBillData.CustomerNumber]));
+              });
+              this.userService.getMultipleUser(this.userData['uid']).subscribe(resUser => {
+                let arrUserId = resUser.map((el:any) => el.customerNumber);
+
+                resBillData.forEach(async (billdata, index) => {
+                  if(arrUserId.includes(billdata.CustomerNumber)) {
+                    let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
+                    let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
+                    let ref = meterDetailsCollection.doc(docId);
+
+                    billdata['ReadingTimeTimestamp'] = readingTime;
+                    billdata['uid'] = this.userData['uid'];
+                    billdata['_id'] = docId;
+
+                    billdata['type'] = this.sharedService.getMeterType(billdata['MeterType']);
+
+                    batch.set(ref, billdata);
+                    this.succededMeters.push({
+                      meterId:billdata.MeterSerialNumber,
+                      date: new Date()
+
+                    });
+                  } else {
+                    this.failedMeters.push({
+                      meterId:billdata.MeterSerialNumber,
+                      date: new Date()
+
+                    });
+                  }
+                });
+                batch.commit().then(resData => {
+                  console.log(resData);
+                  this.fileReset();
+                  this.createImportHistory(resBillData);
+                  this.alertService.success("Successfully Imported");
+
+                  this.router.navigate(['/import/list']);
+                }).catch(err => {
+                  console.log(err);
+                });
+              });
+
+
+            }
+            else {
+              //imported first time
+              this.inputData.forEach(async (billdata, index) => {
+
+                let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
+                let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
+                let ref = meterDetailsCollection.doc(docId);
+
+                billdata['ReadingTimeTimestamp'] = readingTime;
+                billdata['uid'] = this.userData['uid'];
+                billdata['_id'] = docId;
+                switch (billdata['MeterType']) {
+                  case 'MULTICAL 602':
+                    billdata['type'] = 'heat';
+                    break;
+                  case 'MULTICAL 62':
+                    billdata['type'] = 'water';
+                    break;
+                  case 'OMNIPOWER':
+                    billdata['type'] = 'electricity';
+                    break;
+                }
+                batch.set(ref, billdata);
+              });
+              batch.commit().then(resData => {
+                // console.log(resData);
+                this.fileReset();
+                this.alertService.success("Successfully Imported");
+                this.createImportHistory(this.inputData);
+
+                this.router.navigate(['/import/list']);
+
+              }).catch(err => {
+                console.log(err);
+              });
+            }
           }
-          return false;
+
         });
-
-
-        if (currentMonthData) {
-          console.log('data is already there');
-          this.alertService.error("Cannot import this data for this month.");
-          return false;
-        } else {
-          var batch = this.firebaseService.getBatch();
-          if (resData && resData.length > 0) {
-
-            let arrBilldata = {};
-            let resBillData = [];
-            resData.forEach(billdata => {
-              arrBilldata[billdata['CustomerNumber']] = billdata;
-            })
-            this.inputData.forEach(inputBillData => {
-              resBillData.push(this.calculateBill(inputBillData, arrBilldata[inputBillData.CustomerNumber]));
-            });
-
-            resBillData.forEach(async (billdata, index) => {
-              let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
-              let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
-              let ref = meterDetailsCollection.doc(docId);
-
-              billdata['ReadingTimeTimestamp'] = readingTime;
-              billdata['uid'] = this.userData['uid'];
-              billdata['_id'] = docId;
-
-              billdata['type'] = this.sharedService.getMeterType(billdata['MeterType']);
-
-              batch.set(ref, billdata);
-            });
-            batch.commit().then(resData => {
-              console.log(resData);
-              this.fileReset();
-              this.createImportHistory(resBillData);
-              this.alertService.success("Successfully Imported");
-
-              this.router.navigate(['/import/list']);
-            }).catch(err => {
-              console.log(err);
-            });
-
-
-          }
-          else {
-            //imported first time
-            this.inputData.forEach(async (billdata, index) => {
-
-              let readingTime = new Date(billdata.ReadingTime.toString()).getTime();
-              let docId = `${billdata.CustomerNumber + `-` + billdata.MeterSerialNumber + `-` + readingTime}`;
-              let ref = meterDetailsCollection.doc(docId);
-
-              billdata['ReadingTimeTimestamp'] = readingTime;
-              billdata['uid'] = this.userData['uid'];
-              billdata['_id'] = docId;
-              switch (billdata['MeterType']) {
-                case 'MULTICAL 602':
-                  billdata['type'] = 'heat';
-                  break;
-                case 'MULTICAL 62':
-                  billdata['type'] = 'water';
-                  break;
-                case 'OMNIPOWER':
-                  billdata['type'] = 'electricity';
-                  break;
-              }
-              batch.set(ref, billdata);
-            });
-            batch.commit().then(resData => {
-              // console.log(resData);
-              this.fileReset();
-              this.alertService.success("Successfully Imported");
-              this.createImportHistory(this.inputData);
-
-              this.router.navigate(['/import/list']);
-
-            }).catch(err => {
-              console.log(err);
-            });
-          }
-        }
-
-      });
 
     }
   }
 
-  createImportHistory(resBillData) {
-    let arrUserId =  resBillData.map( el => el.CustomerNumber);
-    this.userService.getMultipleUser(arrUserId).subscribe(resUser => {
 
-    
-      let billData = resBillData[0];
-      let readingTime = new Date(billData.ReadingTime.toString()).getTime();
-      let docId = `${billData.CustomerNumber + `-` + billData.MeterSerialNumber + `-` + readingTime}`;
-      let importHistoryData = {
-        _id: docId,
-        importedDate: billData.ReadingTime,
-        importedData: resBillData.length,
-        importedFile: this.fileName,
-        dateCreated: new Date(),
-        uid: this.userData['uid']
+  chunkArray(inputArray, perChunk) {
+
+
+    return inputArray.reduce((resultArray, item, index) => {
+      const chunkIndex = Math.floor(index / perChunk)
+
+      if (!resultArray[chunkIndex]) {
+        resultArray[chunkIndex] = [] // start a new chunk
       }
-      this.meterService.createImportHistory(importHistoryData);
-    });
+
+      resultArray[chunkIndex].push(item)
+
+      return resultArray
+    }, [])
+  }
+
+  createImportHistory(resBillData) {
+
+
+
+    let billData = resBillData[0];
+    let readingTime = new Date(billData.ReadingTime.toString()).getTime();
+    let docId = `${billData.CustomerNumber + `-` + billData.MeterSerialNumber + `-` + readingTime}`;
+    let importHistoryData = {
+      _id: docId,
+      importedDate: billData.ReadingTime,
+      importedData: resBillData.length,
+      importedFile: this.fileName,
+      dateCreated: new Date(),
+      uid: this.userData['uid'],
+      succededMeters : this.succededMeters,
+      failedMeters : this.failedMeters
+    }
+    this.meterService.createImportHistory(importHistoryData);
+
   }
 
 
   calculateBill(billdata, selectedMeterData) {
 
     if (selectedMeterData && billdata['ReadingTime'] != selectedMeterData['ReadingTime']) {
-      //electricity bill calculation
-      let electicityUsage = billdata.ElectricityEnergy - selectedMeterData['ElectricityEnergy'];
       let charges = 0;
       let waterCharges = 0;
       let heatCharges = 0;
-      if (electicityUsage <= this.limitUsage) {
-        charges = electicityUsage * this.settingData.electricTarriff1;
-      }
-      if (electicityUsage >= this.limitUsage) {
-        charges = (this.limitUsage * this.settingData.electricTarriff1) + (electicityUsage - this.limitUsage) * this.settingData.electricTarriff2;
-      }
-
-
-      //water bill calculation
-      let waterUsage = billdata.VolumeWater - selectedMeterData['VolumeWater'];
-      if (waterUsage > 0 && waterUsage <= this.waterMaxBand1) {
-        waterCharges = waterUsage * this.settingData.waterTarriff1;
-      }
-      if (waterUsage > this.waterMaxBand1 && waterUsage <= this.waterMaxBand2) {
-        waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((waterUsage - this.waterMaxBand1) * this.settingData.waterTariff2);
-      }
-      if (waterUsage > this.waterMaxBand2) {
-        waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((this.waterMaxBand2 - this.waterMaxBand1) * this.settingData.waterTariff2) + ((waterUsage - this.waterMaxBand2) * this.settingData.waterTariff3);
-      }
-      if (waterCharges < this.minWaterBill) {
-        waterCharges = this.minWaterBill;
+      if(billdata.MeterType == 'OMNIPOWER') {
+        //electricity bill calculation
+        let electicityUsage = billdata.ElectricityEnergy - selectedMeterData['ElectricityEnergy'];
+    
+        if (electicityUsage <= this.limitUsage) {
+          charges = electicityUsage * this.settingData.electricTarriff1;
+        }
+        if (electicityUsage >= this.limitUsage) {
+          charges = (this.limitUsage * this.settingData.electricTarriff1) + (electicityUsage - this.limitUsage) * this.settingData.electricTarriff2;
+        }
       }
 
+      if(billdata.MeterType == 'MULTICAL 62') {
+        //water bill calculation
+        let waterUsage = billdata.VolumeWater - selectedMeterData['VolumeWater'];
+        if (waterUsage > 0 && waterUsage <= this.waterMaxBand1) {
+          waterCharges = waterUsage * this.settingData.waterTarriff1;
+        }
+        if (waterUsage > this.waterMaxBand1 && waterUsage <= this.waterMaxBand2) {
+          waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((waterUsage - this.waterMaxBand1) * this.settingData.waterTariff2);
+        }
+        if (waterUsage > this.waterMaxBand2) {
+          waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((this.waterMaxBand2 - this.waterMaxBand1) * this.settingData.waterTariff2) + ((waterUsage - this.waterMaxBand2) * this.settingData.waterTariff3);
+        }
+        if (waterCharges < this.minWaterBill) {
+          waterCharges = this.minWaterBill;
+        }
+      }
 
-      //heat bill calculation
-      let heatUsage = billdata.CoolingEnergy - selectedMeterData['CoolingEnergy'];
-      if (heatUsage > 0 && heatUsage <= this.heatMaxBand1) {
-        heatCharges = heatUsage * this.settingData.heatTariff1;
-      }
-      if (heatUsage > this.heatMaxBand1 && heatUsage <= this.heatMaxBand2) {
-        heatCharges = (this.heatMaxBand1 * this.settingData.heatTariff1) + ((heatUsage - this.heatMaxBand1) * this.settingData.heatTariff2);
-      }
-      if (heatUsage > this.heatMaxBand2) {
-        heatCharges = (this.heatMaxBand1 * this.settingData.heatTariff1) + ((this.heatMaxBand2 - this.heatMaxBand1) * this.settingData.heatTariff2) + (heatUsage * this.settingData.heatTariff3);
-      }
-      if (heatCharges < this.minHeatBill) {
-        heatCharges = this.minHeatBill;
+      if(billdata.MeterType == 'MULTICAL 602') {
+        //heat bill calculation
+        let heatUsage = billdata.CoolingEnergy - selectedMeterData['CoolingEnergy'];
+        if (heatUsage > 0 && heatUsage <= this.heatMaxBand1) {
+          heatCharges = heatUsage * this.settingData.heatTariff1;
+        }
+        if (heatUsage > this.heatMaxBand1 && heatUsage <= this.heatMaxBand2) {
+          heatCharges = (this.heatMaxBand1 * this.settingData.heatTariff1) + ((heatUsage - this.heatMaxBand1) * this.settingData.heatTariff2);
+        }
+        if (heatUsage > this.heatMaxBand2) {
+          heatCharges = (this.heatMaxBand1 * this.settingData.heatTariff1) + ((this.heatMaxBand2 - this.heatMaxBand1) * this.settingData.heatTariff2) + (heatUsage * this.settingData.heatTariff3);
+        }
+        if (heatCharges < this.minHeatBill) {
+          heatCharges = this.minHeatBill;
+        }
       }
 
 
