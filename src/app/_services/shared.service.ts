@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-
 @Injectable()
 export class SharedService {
 
@@ -8,6 +7,7 @@ export class SharedService {
   currentData = this.dataSource.asObservable();
   localStorageData;
   constructor() { }
+  
 
   changeData(data:string) {
     this.dataSource.next(data)

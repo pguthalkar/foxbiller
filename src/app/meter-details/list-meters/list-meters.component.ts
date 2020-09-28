@@ -1,11 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { MeterService, SharedService, FirebaseService, AlertService } from '../../_services/index';
+import { MeterService, SharedService, FirebaseService, AlertService, HttpService } from '../../_services/index';
 import { MatPaginator, MatSort } from '@angular/material';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { ActivatedRoute } from '@angular/router';
 import { SelectionModel } from '@angular/cdk/collections';
+import { HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+import { AngularFireFunctions } from '@angular/fire/functions';
 @Component({
     selector: 'app-list-meters',
     templateUrl: './list-meters.component.html',
@@ -20,56 +24,56 @@ export class ListMetersComponent implements OnInit {
         {
             name: 'Jan',
             value: 1
-        },{
+        }, {
             name: 'Feb',
             value: 2
-        },{
+        }, {
             name: 'Mar',
             value: 3
-        },{
+        }, {
             name: 'Apr',
             value: 4
-        },{
+        }, {
             name: 'May',
             value: 5
-        },{
+        }, {
             name: 'June',
             value: 6
-        },{
+        }, {
             name: 'July',
             value: 7
-        },{
+        }, {
             name: 'Aug',
             value: 8
-        },{
+        }, {
             name: 'Sept',
             value: 9
-        },{
+        }, {
             name: 'Oct',
             value: 10
-        },{
+        }, {
             name: 'Nov',
             value: 11
-        },{
+        }, {
             name: 'Dec',
             value: 12
         },
     ];
-    
+
     years = [];
     dataSource;
     loggedInUser;
     selectedMonth = null;
     selectedYear = null;
-    displayedColumns = ['Select', 'MeterSerialNumber', 'ReadingTime', 'CustomerName', 'type', 'status', 'meterCondition', 'invoice','action'];
+    displayedColumns = ['Select', 'MeterSerialNumber', 'ReadingTime', 'CustomerName', 'type', 'status', 'meterCondition', 'invoice', 'action'];
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
     // @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor(private meterService: MeterService, private router: Router, public sharedService: SharedService, private route: ActivatedRoute, private firebaseService: FirebaseService, private alertService: AlertService) {
+    constructor(private functions: AngularFireFunctions, private httpService: HttpService, private meterService: MeterService, private router: Router, public sharedService: SharedService, private route: ActivatedRoute, private firebaseService: FirebaseService, private alertService: AlertService) {
         this.createYears();
-     }
+    }
 
     /**
     * Set the paginator and sort after the view init since this component will
@@ -88,13 +92,13 @@ export class ListMetersComponent implements OnInit {
 
     applyMonthFilter(event) {
         this.selectedMonth = event.value;
-        if(this.selectedMonth && this.selectedYear) {
+        if (this.selectedMonth && this.selectedYear) {
             this.ngOnInit();
         }
     }
     applyYearFilter(event) {
         this.selectedYear = event.value;
-        if(this.selectedMonth && this.selectedYear) {
+        if (this.selectedMonth && this.selectedYear) {
             this.ngOnInit();
         }
     }
@@ -107,15 +111,15 @@ export class ListMetersComponent implements OnInit {
     }
 
     ngOnInit() {
-        
+
         // const type: string = this.route.snapshot.paramMap.get('type');
         let type;
-        let arrParams = window.location.pathname.split("/").filter(function(el) {
+        let arrParams = window.location.pathname.split("/").filter(function (el) {
             return el != null && el != "";
-          });
-          if (arrParams && arrParams[arrParams.length -1]) {
-            type = arrParams[arrParams.length -1];
-          }
+        });
+        if (arrParams && arrParams[arrParams.length - 1]) {
+            type = arrParams[arrParams.length - 1];
+        }
         this.loggedInUser = JSON.parse(this.sharedService.getLocalStorage('user'));
         let condn = {
             'key': 'uid',
@@ -141,10 +145,10 @@ export class ListMetersComponent implements OnInit {
                         } else {
                             meter['isInvoice'] = false;
                         }
-                        meter['totalAmount'] = this.sharedService.getMeterTotalAmount(meter.MeterType,meter) || 0;
+                        meter['totalAmount'] = this.sharedService.getMeterTotalAmount(meter.MeterType, meter) || 0;
                         return meter;
                     });
-                    
+
                     this.dataSource = new MatTableDataSource<any>(this.meters);
                     this.dataSource.paginator = this.paginator;
                     this.dataSource.sort = this.sort;
@@ -173,7 +177,7 @@ export class ListMetersComponent implements OnInit {
                         } else {
                             meter['isInvoice'] = false;
                         }
-                        meter['totalAmount'] = this.sharedService.getMeterTotalAmount(meter.MeterType,meter) || 0;
+                        meter['totalAmount'] = this.sharedService.getMeterTotalAmount(meter.MeterType, meter) || 0;
                         return meter;
                     });
                     meterData = this.aggregateMeterData(meterData);
@@ -209,8 +213,8 @@ export class ListMetersComponent implements OnInit {
         // let arrMeter = meterData.map( meter => {
 
         // });
-        if(this.selectedMonth && this.selectedYear) {
-            let filterData =  meterData.filter( meter => {
+        if (this.selectedMonth && this.selectedYear) {
+            let filterData = meterData.filter(meter => {
                 let readingMonth = new Date(meter.ReadingTime).getMonth() + 1;
                 let readingYear = new Date(meter.ReadingTime).getFullYear();
                 return readingMonth == this.selectedMonth && readingYear == this.selectedYear;
@@ -228,7 +232,7 @@ export class ListMetersComponent implements OnInit {
             // let keys = Object.values(arrMeter);
             return Object.values(arrMeter);
         }
-        
+
     }
 
     isAllSelected() {
@@ -265,7 +269,42 @@ export class ListMetersComponent implements OnInit {
     }
 
     createInvoice(meters) {
-        if(!Array.isArray(meters)) {
+        // const callable = this.functions.httpsCallable('sendEmail');
+        // const obs = callable({ subject: 'Invoice' });
+
+        // obs.subscribe(async res => {
+        //     console.log('email send');
+        // });
+        // const SparkPost = require('sparkpost');
+        // const sparky = new SparkPost('c85b357e95407438503a5bb7c9a49b53c6c2ac78');
+        // sparky.transmissions.send({
+        //     content: {
+        //       from: 'no-reply@foxbiller.com',
+        //       subject: 'Oh hey',
+        //       html:'<html><body><p>Testing SparkPost - the most awesomest email service!</p></body></html>'
+        //     },
+        //     recipients: [ { address: 'pguthalkar@gmail.com' } ]
+        //   })
+        //   .then(data => {
+        //     console.log('Woohoo! You just sent your first mailing!');
+        //   })
+        // let data = {
+        //     "content": {
+        //     "from": "no-reply@foxbiller.com",
+        //     "subject": "Oh hey",
+        //     "html": "<html><body><p>Testing SparkPost - the most awesomest email service!</p></body></html>"
+        //   },
+        //   "recipients": [ { "address": "pguthalkar@gmail.com" } ]
+        // };
+
+        // let headers = new HttpHeaders({
+        //     'Content-Type': 'application/json',
+        //     'Authorization': 'c85b357e95407438503a5bb7c9a49b53c6c2ac78'
+        // });
+        // this.httpService.postHttpResult('https://api.sparkpost.com/api/v1/transmissions', data,headers).subscribe(data => {
+        //     console.log(data);
+        // })
+        if (!Array.isArray(meters)) {
             let temp = [];
             temp.push(meters);
             meters = temp;
@@ -289,7 +328,7 @@ export class ListMetersComponent implements OnInit {
             let invoiceCollection = this.firebaseService.getInvoiceCollection();
             let index = 1;
             for (const meter of meters) {
-                
+
 
                 if (!currentMeterSerialNumbers.includes(meter.MeterSerialNumber)) {
                     let docId = 'INVO' + new Date().getTime() + index;
@@ -300,7 +339,7 @@ export class ListMetersComponent implements OnInit {
                     invoice['invoiceDate'] = new Date();
                     invoice['ReadingTime'] = meter.ReadingTime;
                     invoice['ReadingTimeTimestamp'] = meter.ReadingTimeTimestamp;
-                    invoice['lastElectricityEnergy'] = meter.lastElectricityEnergy  || 0;
+                    invoice['lastElectricityEnergy'] = meter.lastElectricityEnergy || 0;
                     invoice['lastCoolingEnergy'] = meter.lastCoolingEnergy || 0;
                     invoice['lastVolumeWater'] = meter.lastVolumeWater || 0;
                     invoice['ElectricityEnergy'] = meter.ElectricityEnergy || 0;
@@ -326,6 +365,10 @@ export class ListMetersComponent implements OnInit {
                 console.log(err);
             });
         })
+    }
+
+    deleteMeter(element) {
+
     }
 
 

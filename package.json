@@ -31,6 +31,7 @@
     "popper.js": "^1.16.1",
     "rxjs": "~6.5.5",
     "rxjs-compat": "^6.5.2",
+    "sparkpost": "^2.1.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
   },
@@ -54,5 +55,8 @@
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
     "typescript": "~3.8.3"
+  },
+  "browser": {
+    "crypto": false
   }
 }

@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas';
 import { ActivatedRoute } from '@angular/router';
 (window as any).html2canvas = html2canvas;
 import { AlertService, MeterService, UserService,SharedService } from '../../_services/index';
-
+import { AngularFireFunctions } from '@angular/fire/functions';
 @Component({
   selector: 'app-invoice-detail',
   templateUrl: './invoice-detail.component.html',
@@ -13,7 +13,7 @@ import { AlertService, MeterService, UserService,SharedService } from '../../_se
 export class InvoiceDetailComponent implements OnInit {
   @ViewChild('content',{ static: false }) content: ElementRef;
 
-  constructor(private meterService: MeterService, private sharedService:SharedService, private route: ActivatedRoute,private userService:UserService,) { }
+  constructor(private functions: AngularFireFunctions,private meterService: MeterService, private sharedService:SharedService, private route: ActivatedRoute,private userService:UserService,) { }
   invoiceData;
   ngOnInit() {
     const invoiceId: string = this.route.snapshot.paramMap.get('id');
@@ -42,8 +42,24 @@ export class InvoiceDetailComponent implements OnInit {
     });
 
   }
+  sendInvoice(contentDataURL)  {
+    const callable = this.functions.httpsCallable('sendEmail');
+    const obs = callable({ subject: 'Invoice' ,attachments:[
+      {
+          "type":"application/pdf",
+          "name":"invoice.pdf",
+          "data":contentDataURL
+      },
+    ],
+    email: this.invoiceData.userData.email
+  });
 
-  createPdf() {
+    obs.subscribe(async res => {
+        console.log('email send');
+    });
+  }
+
+  createPdf(isSendEmail = 0) {
     // var data = document.getElementById('contentToConvert');
     html2canvas(this.content.nativeElement).then(canvas => {
       // Few necessary setting options
@@ -52,11 +68,20 @@ export class InvoiceDetailComponent implements OnInit {
       var imgHeight = canvas.height * imgWidth / canvas.width;
       var heightLeft = imgHeight;
 
-      const contentDataURL = canvas.toDataURL('image/png')
+      const contentDataURL = canvas.toDataURL('image/png');
       let pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
       var position = 0;
-      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight)
-      pdf.save('new-file.pdf'); // Generated PDF
+      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
+      if(isSendEmail) {
+        var binary = pdf.output();
+        let pdfAttachment =  binary ? btoa(binary) : "";
+        this.sendInvoice(pdfAttachment);
+      } else {
+       
+        pdf.save('new-file.pdf'); // Generated PDF
+      }
+
+      
     });
   }
 

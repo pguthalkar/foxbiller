@@ -177,6 +177,9 @@
                         <button mat-raised-button (click)="createInvoice(element)" [disabled]="element.isInvoice">
                             Invoice
                         </button>
+                        <button mat-raised-button (click)="deleteMeter(element)" [disabled]="!element.isInvoice">
+                            Delete
+                        </button>
                     </td>
                 </ng-container>
 
