@@ -14,7 +14,7 @@
   <li
     class="nav-item "
     [class.active]="importlink.classList.contains('active')"
-    *ngIf="loggedInUser.role === 'admin'"
+    *ngIf="loggedInUser && loggedInUser.role === 'admin'"
   >
     <a
       class="nav-link"
@@ -33,7 +33,7 @@
     </a>
   </li>
 
-  <li class="nav-item " [class.active]="meterlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
+  <li class="nav-item " [class.active]="meterlink.classList.contains('active')" *ngIf="loggedInUser && loggedInUser.role === 'admin'">
     <a
       class="nav-link"
       #meterlink
@@ -45,7 +45,7 @@
     </a>
   </li>
 
-  <li class="nav-item " [class.active]="heatmeterlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
+  <li class="nav-item " [class.active]="heatmeterlink.classList.contains('active')" *ngIf="loggedInUser && loggedInUser.role === 'admin'">
     <a
       class="nav-link"
       #heatmeterlink
@@ -56,7 +56,7 @@
       <span>Heat Meter</span>
     </a>
   </li>
-  <li class="nav-item " [class.active]="watermeterlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
+  <li class="nav-item " [class.active]="watermeterlink.classList.contains('active')" *ngIf="loggedInUser && loggedInUser.role === 'admin'">
     <a
       class="nav-link"
       #watermeterlink
@@ -67,7 +67,7 @@
       <span>Water Meter</span>
     </a>
   </li>
-  <li class="nav-item " [class.active]="electicitymeterlink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
+  <li class="nav-item " [class.active]="electicitymeterlink.classList.contains('active')" *ngIf="loggedInUser && loggedInUser.role === 'admin'">
     <a
       class="nav-link"
       #electicitymeterlink
@@ -78,7 +78,7 @@
       <span>Electricity Meter</span>
     </a>
   </li>
-  <li class="nav-item " [class.active]="invoicelink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
+  <li class="nav-item " [class.active]="invoicelink.classList.contains('active')" *ngIf="loggedInUser && loggedInUser.role === 'admin'">
       <a
         class="nav-link"
         #invoicelink
@@ -90,7 +90,7 @@
       </a>
     </li>
 
-  <li class="nav-item " [class.active]="settinglink.classList.contains('active')" *ngIf="loggedInUser.role === 'admin'">
+  <li class="nav-item " [class.active]="settinglink.classList.contains('active')" *ngIf="loggedInUser && loggedInUser.role === 'admin'">
     <a
       class="nav-link"
       #settinglink

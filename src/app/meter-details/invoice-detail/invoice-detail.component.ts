@@ -15,7 +15,9 @@ export class InvoiceDetailComponent implements OnInit {
 
   constructor(private functions: AngularFireFunctions,private meterService: MeterService, private sharedService:SharedService, private route: ActivatedRoute,private userService:UserService,) { }
   invoiceData;
+  settingData;
   ngOnInit() {
+    this.settingData = this.sharedService.getLocalStorage('settingData') ? JSON.parse(this.sharedService.getLocalStorage('settingData')) : null;
     const invoiceId: string = this.route.snapshot.paramMap.get('id');
     let condn = {
       'key': 'invoiceId',

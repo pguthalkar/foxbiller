@@ -128,7 +128,9 @@ export class AuthService {
 
   signOut() {
     this.afAuth.auth.signOut().then(() => {
-      this.router.navigate(['/']);
+      this.sharedService.removeLocalStorage('user');
+      this.sharedService.changeData('0');
+      this.router.navigate(['/login']);
     });
   }
 
@@ -137,6 +139,15 @@ export class AuthService {
     console.error(error);
     alert(error.message)
     this.notify.update(error.message, 'error');
+  }
+  public updateSettingData(uid) {
+    const settingRef: AngularFirestoreDocument<User> = this.afs.doc(
+      `settings/${uid}`
+    );
+    settingRef.valueChanges().subscribe( settingData => {
+      // console.log(settingData);
+      this.sharedService.setLocalStorage('settingData',JSON.stringify(settingData));
+    });
   }
 
   // Sets user data to firestore after succesful login
@@ -170,6 +181,7 @@ export class AuthService {
       };
       // localStorage.setItem('user',JSON.stringify(data));
       this.sharedService.setLocalStorage('user',JSON.stringify(data));
+      this.sharedService.changeData('1');
       return userRef.set(data);
 
     });

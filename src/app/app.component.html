@@ -1,7 +1,8 @@
-<div *ngIf="auth.user | async;  then authenticate else login">
+<!-- <div *ngIf="auth.user | async;  then authenticate else login">
  
-</div>
-<ng-template #authenticate> 
+</div> -->
+
+<div  *ngIf="isLoggedIn else login" > 
     <app-header ></app-header>
     <div id="wrapper">
       <app-nav-bar></app-nav-bar>
@@ -10,7 +11,7 @@
       </div>
   
     </div>
-</ng-template>
+</div>
 <ng-template #login >
     <router-outlet></router-outlet>
 </ng-template>

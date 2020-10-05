@@ -17,13 +17,13 @@ export class InvoicesComponent implements OnInit {
 
   dataSource;
   loggedInUser;
-  displayedColumns = ['InvoiceNo', 'InvoiceDate', 'CustomerName', 'meterId', 'totalAmount'];
+  displayedColumns = ['InvoiceNo', 'InvoiceDate', 'CustomerName', 'meterId', 'totalAmount', 'action'];
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
   // @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(private meterService: MeterService,  private router: Router, public sharedService: SharedService, private route: ActivatedRoute, private firebaseService: FirebaseService, private alertService: AlertService) { }
+  constructor(private meterService: MeterService, private router: Router, public sharedService: SharedService, private route: ActivatedRoute, private firebaseService: FirebaseService, private alertService: AlertService) { }
 
   ngOnInit() {
     this.loggedInUser = JSON.parse(this.sharedService.getLocalStorage('user'));
@@ -33,8 +33,8 @@ export class InvoicesComponent implements OnInit {
       'value': this.loggedInUser.uid
     }
     this.meterService.getInvoicesCondn(condn).subscribe(invoiceData => {
-      this.invoices = invoiceData.map( invoice => {
-        invoice['invoiceDate'] = new Date(invoice['invoiceDate'].seconds*1000);
+      this.invoices = invoiceData.map(invoice => {
+        invoice['invoiceDate'] = new Date(invoice['invoiceDate'].seconds * 1000);
         return invoice;
       });
       this.dataSource = new MatTableDataSource<any>(this.invoices);
@@ -44,12 +44,19 @@ export class InvoicesComponent implements OnInit {
     });
   }
 
-  
+
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
-}
+  }
 
+  deleteInvoice(invoiceData) {
+    if(confirm('Are you sure to Delete ?')) {
+    
+      console.log(invoiceData);
+      this.meterService.deleteInvoice(invoiceData.invoiceId);
+    }
+  }
 
 }

@@ -75,6 +75,14 @@ export class MeterService {
    
   }
 
+  deleteInvoice(docId) {
+    // return this.firestore.collection('meterDetails', ref => ref.where('CustomerNumber', '==', CustomerNumber).orderBy('ReadingTimeTimestamp', 'asc').limit(1));
+    this.afs.doc(
+      `invoices/${docId}`
+    ).delete();
+   
+  }
+
   createInvoice(data) {
     const invoiceRef: AngularFirestoreDocument<User> = this.afs.doc(
       `invoices/${data.invoiceId}`

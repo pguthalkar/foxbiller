@@ -2,11 +2,13 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 // import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter, CdkDragExit, CdkDragStart, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 import { AlertService, FirebaseService, SharedService, MeterService } from '../../_services/index';
+import {AuthService } from '../../core/auth.service';
 import { UserService } from '../../_services/index';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';  // RxJS 6 syntax
 import { Route, Router } from '@angular/router';
+import { setInterval } from 'timers';
 
 @Component({
   selector: 'app-import',
@@ -20,7 +22,8 @@ export class ImportComponent implements OnInit {
     private userService: UserService,
     private sharedService: SharedService,
     private meterService: MeterService,
-    private router: Router
+    private router: Router,
+    private authService:AuthService
   ) {
 
     this.userData = this.sharedService.getLocalStorage('user') ? JSON.parse(this.sharedService.getLocalStorage('user')) : {};
@@ -32,12 +35,12 @@ export class ImportComponent implements OnInit {
   inputData = [];
   arrBillsRequests = [];
   flag = false;
-  tariffA = 0.435;
-  tariffB = 0.509;
+  tarriffA = 0.435;
+  tarriffB = 0.509;
 
-  waterTariff1 = 0.80;
-  waterTariff2 = 2;
-  waterTariff3 = 3;
+  waterTarriff1 = 0.80;
+  waterTarriff2 = 2;
+  waterTarriff3 = 3;
 
   minWaterCharge = 50;
 
@@ -49,9 +52,9 @@ export class ImportComponent implements OnInit {
   heatMaxBand1: number = 100;
   heatMaxBand2: number = 500;
   minHeatBill = 0;
-  heatTariff1 = 1.50;
-  heatTariff2 = 2;
-  heatTariff3 = 3;
+  heatTarriff1 = 1.50;
+  heatTarriff2 = 2;
+  heatTarriff3 = 3;
 
 
   availableFields = [
@@ -143,7 +146,11 @@ export class ImportComponent implements OnInit {
   succededMeters =[];
   ngOnInit() {
     this.loggedInUser = JSON.parse(this.sharedService.getLocalStorage('user'));
-    this.settingData = this.sharedService.getLocalStorage('settingData') ? JSON.parse(this.sharedService.getLocalStorage('settingData')) : null;
+    this.authService.updateSettingData(this.loggedInUser.uid);
+    setTimeout(() => {
+      this.settingData = this.sharedService.getLocalStorage('settingData') ? JSON.parse(this.sharedService.getLocalStorage('settingData')) : null;
+    }, 2000);
+    
   }
   title = 'app';
   public csvRecords: any[] = [];
@@ -332,10 +339,10 @@ export class ImportComponent implements OnInit {
               let arrBilldata = {};
               let resBillData = [];
               resData.forEach(billdata => {
-                arrBilldata[billdata['CustomerNumber']] = billdata;
+                arrBilldata[billdata['MeterSerialNumber']] = billdata;
               })
               this.inputData.forEach(inputBillData => {
-                resBillData.push(this.calculateBill(inputBillData, arrBilldata[inputBillData.CustomerNumber]));
+                resBillData.push(this.calculateBill(inputBillData, arrBilldata[inputBillData.MeterSerialNumber]));
               });
               this.userService.getMultipleUser(this.userData['uid']).subscribe(resUser => {
                 let arrUserId = resUser.map((el:any) => el.customerNumber);
@@ -402,6 +409,11 @@ export class ImportComponent implements OnInit {
                     billdata['type'] = 'electricity';
                     break;
                 }
+                this.succededMeters.push({
+                  meterId:billdata.MeterSerialNumber,
+                  date: new Date()
+
+                });
                 batch.set(ref, billdata);
               });
               batch.commit().then(resData => {
@@ -463,7 +475,7 @@ export class ImportComponent implements OnInit {
 
 
   calculateBill(billdata, selectedMeterData) {
-
+    let selectedTarriff = '';
     if (selectedMeterData && billdata['ReadingTime'] != selectedMeterData['ReadingTime']) {
       let charges = 0;
       let waterCharges = 0;
@@ -474,6 +486,7 @@ export class ImportComponent implements OnInit {
     
         if (electicityUsage <= this.limitUsage) {
           charges = electicityUsage * this.settingData.electricTarriff1;
+          selectedTarriff = this.settingData.electricTarriff1;
         }
         if (electicityUsage >= this.limitUsage) {
           charges = (this.limitUsage * this.settingData.electricTarriff1) + (electicityUsage - this.limitUsage) * this.settingData.electricTarriff2;
@@ -487,10 +500,10 @@ export class ImportComponent implements OnInit {
           waterCharges = waterUsage * this.settingData.waterTarriff1;
         }
         if (waterUsage > this.waterMaxBand1 && waterUsage <= this.waterMaxBand2) {
-          waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((waterUsage - this.waterMaxBand1) * this.settingData.waterTariff2);
+          waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((waterUsage - this.waterMaxBand1) * this.settingData.waterTarriff2);
         }
         if (waterUsage > this.waterMaxBand2) {
-          waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((this.waterMaxBand2 - this.waterMaxBand1) * this.settingData.waterTariff2) + ((waterUsage - this.waterMaxBand2) * this.settingData.waterTariff3);
+          waterCharges = (this.waterMaxBand1 * this.settingData.waterTarriff1) + ((this.waterMaxBand2 - this.waterMaxBand1) * this.settingData.waterTarriff2) + ((waterUsage - this.waterMaxBand2) * this.settingData.waterTarriff3);
         }
         if (waterCharges < this.minWaterBill) {
           waterCharges = this.minWaterBill;
@@ -501,13 +514,13 @@ export class ImportComponent implements OnInit {
         //heat bill calculation
         let heatUsage = billdata.CoolingEnergy - selectedMeterData['CoolingEnergy'];
         if (heatUsage > 0 && heatUsage <= this.heatMaxBand1) {
-          heatCharges = heatUsage * this.settingData.heatTariff1;
+          heatCharges = heatUsage * this.settingData.heatTarriff1;
         }
         if (heatUsage > this.heatMaxBand1 && heatUsage <= this.heatMaxBand2) {
-          heatCharges = (this.heatMaxBand1 * this.settingData.heatTariff1) + ((heatUsage - this.heatMaxBand1) * this.settingData.heatTariff2);
+          heatCharges = (this.heatMaxBand1 * this.settingData.heatTarriff1) + ((heatUsage - this.heatMaxBand1) * this.settingData.heatTarriff2);
         }
         if (heatUsage > this.heatMaxBand2) {
-          heatCharges = (this.heatMaxBand1 * this.settingData.heatTariff1) + ((this.heatMaxBand2 - this.heatMaxBand1) * this.settingData.heatTariff2) + (heatUsage * this.settingData.heatTariff3);
+          heatCharges = (this.heatMaxBand1 * this.settingData.heatTarriff1) + ((this.heatMaxBand2 - this.heatMaxBand1) * this.settingData.heatTarriff2) + (heatUsage * this.settingData.heatTarriff3);
         }
         if (heatCharges < this.minHeatBill) {
           heatCharges = this.minHeatBill;
