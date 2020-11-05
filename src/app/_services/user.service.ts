@@ -8,7 +8,7 @@ import { auth } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
 
 import { User } from '../_models/index';
-
+import { AngularFireFunctions } from '@angular/fire/functions';
 @Injectable()
 export class UserService {
 
@@ -18,6 +18,7 @@ export class UserService {
   constructor(private firestore: AngularFirestore, private afAuth: AngularFireAuth,
     private afAuth2: AngularFireAuth,
     private afs: AngularFirestore,
+    private functions :AngularFireFunctions
   ) {
     this.usersCollection = this.firestore.collection('users');
   }
@@ -42,6 +43,20 @@ export class UserService {
 
   }
 
+  sendResetPasswordEmail(userEmail) {
+    let html = '<html><body><p>Dear User,</p> <p> reset your password <a href="">reset </a> .</p></body></html>';
+    const callable = this.functions.httpsCallable('sendEmail');
+    
+    const obs = callable({ subject: 'Password reset' ,
+    email: userEmail,
+    html:html
+  });
+
+    obs.subscribe(async res => {
+        console.log('email send');
+    });
+  }
+
   createUser(content) {
 
     return this.afAuth2.auth
@@ -49,8 +64,18 @@ export class UserService {
       .then(credential => {
         content['uid'] = credential.user.uid
         content['time'] = new Date().getTime();
+        content['otp'] = new Date().getTime();
         const userRef: AngularFirestoreDocument<User> = this.afs.doc(
           `users/${credential.user.uid}`
+        );
+
+        this.afAuth2.auth.sendPasswordResetEmail('pguthalkar@gmail.com').then(
+          () => {
+            console.log('reset email sent');
+          },
+          err => {
+            // handle errors
+          }
         );
         return userRef.set(content);
       }).catch(error => {

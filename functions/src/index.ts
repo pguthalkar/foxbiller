@@ -10,15 +10,15 @@ export const helloWorld = functions.https.onRequest((request, response) => {
 });
 
 export const sendEmail = functions.https.onCall((data, context) => {
-    let html = '<html><body><p>Dear User,</p> <p> Here is your invoice.</p></body></html>';
-    console.log(html);
+    
+  
     const SparkPost = require('sparkpost');
 const sparky = new SparkPost('c85b357e95407438503a5bb7c9a49b53c6c2ac78');
     sparky.transmissions.send({
         content: {
             from: 'no-reply@foxbiller.com',
             subject: data.subject,
-            html: html,
+            html: data.html,
             attachments:data.attachments
         },
         recipients: [{ address: data.email }]

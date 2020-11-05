@@ -45,12 +45,14 @@ export class InvoiceDetailComponent implements OnInit {
 
   }
   sendInvoice(contentDataURL)  {
+    let html = '<html><body><p>Dear User,</p> <p> Here is your invoice.</p></body></html>';
     const callable = this.functions.httpsCallable('sendEmail');
     const obs = callable({ subject: 'Invoice' ,attachments:[
       {
           "type":"application/pdf",
           "name":"invoice.pdf",
-          "data":contentDataURL
+          "data":contentDataURL,
+          "html" : html
       },
     ],
     email: this.invoiceData.userData.email

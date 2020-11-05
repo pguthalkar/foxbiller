@@ -9,8 +9,9 @@ import { MatTableModule, MatFormFieldModule, MatSelectModule, MatInputModule,  M
 import { AddUserComponent } from './add-user/add-user.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserDetailComponent } from './user-detail/user-detail.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 @NgModule({
-  declarations: [ListUserComponent, AddUserComponent, UserDetailComponent],
+  declarations: [ListUserComponent, AddUserComponent, UserDetailComponent, ResetPasswordComponent],
   imports: [
     CommonModule,
     UsersRoutingModule,
