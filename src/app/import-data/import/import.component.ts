@@ -60,12 +60,12 @@ export class ImportComponent implements OnInit {
   availableFields = [
     {
       'name': 'CustomerName',
-      'required': true,
+      'required': false,
       'mapped': ['Customer name']
     },
     {
       'name': 'CustomerNumber',
-      'required': true,
+      'required': false,
       'mapped': ['Customer number']
     },
     {
@@ -100,13 +100,7 @@ export class ImportComponent implements OnInit {
       'name': 'CUnit',
       'required': false,
       'mapped': ['CUnit']
-    },
-    {
-      'name': 'Flow1',
-      'required': false,
-      'mapped': ['Flow 1']
-    },
-    {
+    }, {
       'name': 'VolumeWater',
       'required': false,
       'mapped': ['Volume Water']
@@ -114,29 +108,7 @@ export class ImportComponent implements OnInit {
       'name': 'WUnit',
       'required': false,
       'mapped': ['WUnit']
-    }, {
-      'name': 'Temperature1',
-      'required': false,
-      'mapped': ['Temperature 1']
-    }, {
-      'name': 'T1Unit',
-      'required': false,
-      'mapped': ['T1Unit']
-    },
-    {
-      'name': 'Temperature2',
-      'required': false,
-      'mapped': ['Temperature 2']
-    }, {
-      'name': 'T2Unit',
-      'required': false,
-      'mapped': ['T2Unit']
-    },
-    {
-      'name': 'InfoCodes',
-      'required': false,
-      'mapped': ['Info codes']
-    }
+    }, 
   ];
   inactiveCustomers = [];
   loggedInUser;

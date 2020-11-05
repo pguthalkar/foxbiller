@@ -370,5 +370,9 @@
     {
       "offset": "GMT+14:00",
       "name": "Pacific/Kiritimati"
+    },
+    {
+      "offset": "GMT+08:00",
+      "name": "MYT/Malaysia" 
     }
   ]
